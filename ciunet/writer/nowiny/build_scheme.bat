@@ -1,0 +1,1 @@
+python C:\Users\sc\AppData\Local\Programs\Python\Python36\Scripts\pyxbgen -u .\nowiny_writer.xsd -m nowiny_writer_defs

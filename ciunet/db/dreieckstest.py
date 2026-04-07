@@ -1,0 +1,26 @@
+from influxdb import InfluxDBClient, DataFrameClient
+import pandas
+dbClient = InfluxDBClient(host='192.168.1.78', port=8086, database='kiln1')
+query_rising = f"select timeestamp_rising as y, timeestamp_falling as x from tireslip_raw where id='1' and time>now()-3d ORDER BY time DESC limit 10"  # LIMIT {self.average_rotations}'
+data = dbClient.query(query_rising)
+pandas.set_option("display.max_rows", None, "display.max_columns", None)
+df = pandas.DataFrame(dbClient.query(query_rising, chunked=True, chunk_size=10000).get_points())
+df.set_index('time', inplace = True)
+dfy=(df['y'])
+dfy.dropna(inplace=True)
+dfx=(df['x'])
+dfy=dfy.rename('x')
+dfx=dfx.rename('x')
+dfx.dropna(inplace=True)
+dfxy=pandas.concat([dfx,dfy])
+dfxy.sort_index(inplace=True)
+dfxy.dropna(inplace=True)
+dfxy=dfxy.to_frame()
+dfxy['interval']=dfxy.diff()
+dfxy['interval']=pandas.to_numeric(dfxy['interval'])
+dfxy.dropna(inplace=True)
+dfxy['interval']=pandas.to_numeric(dfxy['interval'])
+dfxy.loc[dfxy.interval < 0].interval += 4294967295
+interval1=(dfxy[::2].interval.mean())
+interval2=(dfxy[1::2].interval.mean())
+print( interval1, interval2)

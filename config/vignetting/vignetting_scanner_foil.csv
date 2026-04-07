@@ -1,0 +1,26 @@
+# Angle dependent transmission adjustement (vignetting) for FOIL mounted in the scanner. Source scanner/08D.Window.Lager.Performance-Tests/Tx.vs.Angle.GO90409A.xls
+0,0.8613
+5,0.9396
+10,0.9687
+15,0.9687
+20,0.9642
+25,0.972
+30,0.9866
+35,0.9933
+40,0.9955
+45,0.9955
+50,0.9955
+55,0.9955
+60,1
+65,0.9955
+70,0.9955
+75,0.9955
+80,0.9978
+85,1.0011
+90,0.9888
+95,0.9743
+100,0.9664
+105,0.9687
+110,0.972
+115,0.9396
+120,0.8635

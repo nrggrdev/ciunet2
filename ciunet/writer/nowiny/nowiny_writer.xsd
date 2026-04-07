@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" >
+  <xsd:element name="TempMeas">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="IdKiln" type="xs:integer" />
+        <xsd:element name="Date" type="xs:dateTime" />
+        <xsd:element name="Sections">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:annotation>
+                <xsd:documentation>
+                  Sequence of equally distanced sections over the horizontal kiln length. Interpolated to fixed number 
+                  of sections.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:element name="Section" minOccurs="240" maxOccurs="240">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="Position" type="xs:integer">
+                      <xsd:annotation>
+                        <xsd:documentation>
+                          Middle position of Section on the kiln. Unit=millimeters
+                        </xsd:documentation>
+                      </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="Temps">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:annotation>
+                            <xsd:documentation>
+                              Measured temperatures of the kiln shell inside a given section. Contains a sequence of 
+                              vertically equally distanced  temperatures values, interpolated to a given 
+                              minimum/maximum number of values.
+                            </xsd:documentation>
+                          </xsd:annotation>
+                          <xsd:element name="temp" type="xs:integer" minOccurs="36" maxOccurs="64">
+                            <xsd:annotation>
+                              <xsd:documentation>
+                                Unit=°Celsius
+                              </xsd:documentation>
+                            </xsd:annotation>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xs:schema>
