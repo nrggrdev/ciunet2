@@ -159,7 +159,7 @@ class MainClass(QtCore.QObject):
         QtWidgets.QApplication.setWindowIcon(QtGui.QIcon(":/icon/scanner1.ico"))
         self.logger = logging.getLogger(QtCore.QCoreApplication.applicationName())
 
-    ##@QtCore.Slot()
+    ##@QtCore.pyqtSlot()
     @util.noexcept
     def aboutToQuit(self):
         self.logger.info("Quitting application.")
@@ -293,7 +293,7 @@ class MainClass(QtCore.QObject):
                 raise ValueError("Specified icon path does not exist.")
         except Exception as e:
             self.logger.warning("Could not set specified icon: {}".format(e))
-            QtWidgets.QApplication.setWindowIcon(QtGui.QIcon(":/icon/scanner1.png"))
+            QtWidgets.QApplication.setWindowIcon(QtGui.QIcon(":/icon/scanner1.ico"))
 
     @staticmethod
     def get_configspec_errors(conf, data, prefix=[]):
@@ -311,7 +311,7 @@ class MainClass(QtCore.QObject):
                 errors.append(error)
         return errors
 
-    #@QtCore.Slot()
+    #@QtCore.pyqtSlot()
     @util.noexcept
     def write_status_data(self):
         if self.status_data is None:
@@ -319,7 +319,7 @@ class MainClass(QtCore.QObject):
         self.logger.debug("Saving device status.")
         self.device_status_receiver.write_status(self.status_data, "logs/device_status.json")
 
-    #@QtCore.Slot(object)
+    #@QtCore.pyqtSlot(object)
     @util.noexcept
     def save_status_data(self, data):
         self.status_data = data

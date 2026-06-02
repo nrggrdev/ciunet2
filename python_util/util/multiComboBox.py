@@ -2,12 +2,12 @@
     This widget is a Python port of QxtCheckComboBox from http://dev.libqxt.org/libqxt/src
     (published under public license, but not specifically GPL)
 """
-from Qt import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 from . import utils
 
 
 class MultiComboBoxModel(QtGui.QStandardItemModel):
-    checkStateChanged = QtCore.Signal()
+    checkStateChanged = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(MultiComboBoxModel, self).__init__(0, 1, parent)
@@ -36,7 +36,7 @@ class MultiComboBox(QtWidgets.QComboBox):
     """ Extension of QComboBox widget that allows for multiple selection
     """
     # Signal containing list of selected items
-    selectionChanged = QtCore.Signal(list)
+    selectionChanged = QtCore.pyqtSignal(list)
 
     def __init__(self, parent=None):
         super(MultiComboBox, self).__init__(parent=parent)

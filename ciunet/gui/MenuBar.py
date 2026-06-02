@@ -1,12 +1,12 @@
 import logging
 
-from Qt import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 from python_util import util as util
 from ..processing.networkTrigger import udpTriggerSender
 class LogFilterMenu(QtWidgets.QMenu):
-    signal_Filter_changed=QtCore.Signal(object)
-    signal_log_pause=QtCore.Signal(object)
+    signal_Filter_changed=QtCore.pyqtSignal(object)
+    signal_log_pause=QtCore.pyqtSignal(object)
     def __init__(self, name, parent):
         super().__init__(name, parent)
         self.filterClasses=set()
@@ -50,7 +50,7 @@ class LogFilterMenu(QtWidgets.QMenu):
         self.signal_Filter_changed.emit(filters)
 
 class LoglevelMenu(QtWidgets.QMenu):
-    signal_loglevel_changed = QtCore.Signal(object)
+    signal_loglevel_changed = QtCore.pyqtSignal(object)
 
     def __init__(self, name, parent,config):
         self.logger = logging.getLogger()
@@ -81,13 +81,13 @@ class LoglevelMenu(QtWidgets.QMenu):
                 return level
         raise RuntimeError("No logging level checked.")
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.guiNoExcept()
     def _loglevel_changed(self):
         self.signal_loglevel_changed.emit(self._get_logging_level())
 
 class DialogMovement(QtWidgets.QDialog):
-    signalSetPosition=QtCore.Signal(float)
+    signalSetPosition=QtCore.pyqtSignal(float)
     def __init__(self,parent=None,title="new Pos",pos=0):
         super().__init__(parent=parent)
         l=QtWidgets.QGridLayout()
@@ -119,8 +119,8 @@ class DialogMovement(QtWidgets.QDialog):
             print(e)
 
 class movementMenu(QtWidgets.QMenu):
-    signalSetLowPosition=QtCore.Signal(float)
-    signalSetUpPosition=QtCore.Signal(float)
+    signalSetLowPosition=QtCore.pyqtSignal(float)
+    signalSetUpPosition=QtCore.pyqtSignal(float)
 
     def __init__(self, menubar,config):
         super().__init__(menubar)
@@ -158,8 +158,8 @@ class calibrationMenu(QtWidgets.QMenu):
 
 
 class FileMenu(QtWidgets.QMenu):
-    clearLogViewSignal=QtCore.Signal()
-    signal_log_pause=QtCore.Signal(object)
+    clearLogViewSignal=QtCore.pyqtSignal()
+    signal_log_pause=QtCore.pyqtSignal(object)
     def __init__(self, menubar,config):
         super().__init__(menubar)
         self.menubar = menubar
@@ -213,11 +213,11 @@ class HelpMenu(QtWidgets.QMenu):
         self.addAction(self.aboutqt_action)
         self.aboutqt_action.triggered.connect(self.aboutqtClicked)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def aboutqtClicked(self):
         QtWidgets.QMessageBox.aboutQt(self)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def langClicked(self):
         pass
 

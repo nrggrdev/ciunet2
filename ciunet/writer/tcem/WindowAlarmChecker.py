@@ -4,7 +4,7 @@ import configparser
 import threading
 
 import numpy
-from Qt import QtCore
+from PyQt5 import QtCore
 
 from daq_net.daq import Temperature
 from python_util import util as util
@@ -41,7 +41,7 @@ class WindowAlarmChecker(QtCore.QObject):
         self.__ini_writer_timer = QtCore.QTimer(self)
         self.__ini_writer_timer.setInterval(1000 * self.__configINI_interval)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def start(self):
         self.logger.debug("Starting Window Alarm checker.")
@@ -50,13 +50,13 @@ class WindowAlarmChecker(QtCore.QObject):
         self.__ini_writer_timer.timeout.connect(self.__buildINIOutputFile)
         self.__ini_writer_timer.start()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def stop(self):
         self.__periodicConfigParser.stop()
         self.__ini_writer_timer.stop()
 
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
     @util.noexcept
     def receiveData(self, tcem_image):
         self.logger.debug("Window alarm received data. #Windows={}".format(len(self.__windows)))
@@ -103,7 +103,7 @@ class WindowAlarmChecker(QtCore.QObject):
     def __checkWindows(self, data):
         pass
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def __parseConfig(self):
         try:
@@ -178,7 +178,7 @@ class WindowAlarmChecker(QtCore.QObject):
         # Add windows
         return out
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def __buildINIOutputFile(self):
         try:
             windows = self.__windows

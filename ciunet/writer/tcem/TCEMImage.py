@@ -4,7 +4,7 @@ import logging
 import datetime
 
 from ctypes import sizeof
-from Qt import QtCore
+from PyQt5 import QtCore
 
 from .headers import T_CIUIMAGE
 from daq_net.daq import Temperature

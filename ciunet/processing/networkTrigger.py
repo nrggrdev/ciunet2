@@ -2,7 +2,7 @@ import logging
 import json
 import datetime
 import time
-from Qt import QtCore, QtNetwork
+from PyQt5 import QtCore, QtNetwork
 
 from daq_net.daq.TriggerReceiver import TriggerReceiver
 from python_util import util as util
@@ -10,7 +10,7 @@ from python_util import util as util
 
 
 class udpTrigger(QtCore.QObject):
-    signal_trigger = QtCore.Signal(object)
+    signal_trigger = QtCore.pyqtSignal(object)
 
     def __init__(self, trigger_config, parent,local=False):
         super().__init__(parent)

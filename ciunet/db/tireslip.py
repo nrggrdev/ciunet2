@@ -380,25 +380,27 @@ class Xkiln_unused(object):
         self.lastTic=self.startTime
         self.runtime=0
 
-    def writeRawValue(self,value,rising=True, channel=0,scanner=1):
-        if rising:
-            postfix='rising'
-        else:
-            postfix='falling'
-
-
-        js = {"time": datetime.utcnow(),
-              "measurement": "tireslip_raw",
-              "tags": {
-                  "id": channel,
-                  "scanner": scanner,
-              },
-              "fields": {
-                  f"timeestamp_{postfix}":value
-              }
-              }
-        if self.influx_online:
-            self.dbClient.write_points(js)
+    def writeRawValue(self, data):
+        try:
+            rising, rawChannel, channel, value = data
+        except Exception as e:
+            self.logger.warning(f'raw tireslip write failed; data:{data}; error:{e}')
+            return
+        postfix = 'rising' if rising else 'falling'
+        js = [{"time": datetime.utcnow(),
+               "measurement": "tireslip_raw",
+               "tags": {
+                   "id": channel,
+               },
+               "fields": {
+                   f"timeestamp_{postfix}": value
+               }
+               }]
+        try:
+            if self.influx_online:
+                self.dbClient.write_points(js)
+        except Exception as e:
+            self.logger.warning(f'write_points failed: {e}')
 
     def getTires(self):
         i=0
@@ -1732,15 +1734,18 @@ class gear(object):
         self.logger.debug(f"{self.rpm},{self.std}")
         stable=False
         try:
+            rpm = self.rpm
+            rpm_min = rpm.min() if hasattr(rpm, 'min') else rpm
+            rpm_max = rpm.max() if hasattr(rpm, 'max') else rpm
             if self.HA:
-                stable= (self.minRPM_HA<self.rpm.min())and (self.rpm.max()<self.maxRPM_HA)and self.softwaretimeout
+                stable= (self.minRPM_HA<rpm_min)and (rpm_max<self.maxRPM_HA)and self.softwaretimeout
                 if stable:
                     self.isHA=True
                 else:
                     self.isHA=False
             self.logger.info(f"isHA {self.isHA},{stable}")
 
-            stable=stable or (self.minRPM<self.rpm.min())and (self.rpm.max()<self.maxRPM)and(self.std<self.sigmaMax)and self.softwaretimeout
+            stable=stable or (self.minRPM<rpm_min)and (rpm_max<self.maxRPM)and(self.std<self.sigmaMax)and self.softwaretimeout
             return stable
 
         except:

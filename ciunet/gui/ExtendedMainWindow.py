@@ -1,4 +1,4 @@
-from Qt import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 _DEFAULT_SIZE = QtCore.QSize(600, 600)
 _DEFAULT_POS = QtCore.QPoint(200, 200)

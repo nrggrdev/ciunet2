@@ -1,0 +1,18 @@
+# Abhaengigkeiten der Simulator-Werkzeuge (scanner_simulator, data_viewer,
+# geometry_tool). Schlanke Teilmenge der Projekt-Dependencies.
+#
+# Installation mit uv:
+#   uv pip install -r simulator/requirements.txt
+#
+# Alternativ das gesamte Projekt aufsetzen:
+#   uv sync
+#
+# Die repo-internen Pakete (daq_net, ciunet, python_util) liegen im
+# Projektbaum und werden nicht ueber pip installiert -- Skripte daher aus
+# dem Projekt-Hauptverzeichnis starten.
+
+numpy==2.3.5
+scipy==1.17.1
+PyQt5==5.15.11
+pyqtgraph>=0.14.0
+configobj>=5.0.9

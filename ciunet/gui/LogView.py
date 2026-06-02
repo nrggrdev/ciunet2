@@ -1,13 +1,13 @@
 import re
 
-from Qt import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 from python_util import util as util
 
 
 class LogViewWidget(QtWidgets.QTextBrowser):
-    signal_write = QtCore.Signal(str)
-    signal_error = QtCore.Signal(str, str)
+    signal_write = QtCore.pyqtSignal(str)
+    signal_error = QtCore.pyqtSignal(str, str)
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -32,7 +32,7 @@ class LogViewWidget(QtWidgets.QTextBrowser):
         self.write(f'<b>Starting {name} Version {version}</b>')
         self.write('*'*80)
  #       self.setFont(f)
-    @QtCore.Slot(str)
+    @QtCore.pyqtSlot(str)
     @util.noexcept
     @util.assert_equal_thread()
 
@@ -54,7 +54,7 @@ class LogViewWidget(QtWidgets.QTextBrowser):
             self.setTextColor(QtGui.QColor("black"))
         self.append(text)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def getting_destroyed(self):
         self.alive = False

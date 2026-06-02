@@ -3,7 +3,7 @@ import sys
 import subprocess
 import os
 
-from Qt import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 import logging
 
 
@@ -19,8 +19,8 @@ def open_file(filename):
 
 
 class StatusTray(QtWidgets.QSystemTrayIcon):
-    signalToggleTemperatureTransformation = QtCore.Signal()
-    signalToggleFOVmode = QtCore.Signal()
+    signalToggleTemperatureTransformation = QtCore.pyqtSignal()
+    signalToggleFOVmode = QtCore.pyqtSignal()
 
     def __init__(self, mainWindow, config):
         super().__init__()
@@ -71,7 +71,7 @@ class StatusTray(QtWidgets.QSystemTrayIcon):
 #         thermal_image = self.export_menu.addAction(self.tr("Thermal Image"))
 #         thermal_image.triggered.connect(lambda self: self.export_thermal_image(kiln))
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.guiNoExcept()
     def export_thermal_image(self, kiln):
         filename = kiln.export_thermal_image()
@@ -82,7 +82,7 @@ class StatusTray(QtWidgets.QSystemTrayIcon):
         a.setData(config_path)
         a.triggered.connect(self.edit_config)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.guiNoExcept()
     @util.assert_equal_thread()
     def edit_config(self):
@@ -92,7 +92,7 @@ class StatusTray(QtWidgets.QSystemTrayIcon):
         self.logger.debug("Opening file: {}".format(path))
         open_file(path)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def handleExit(self):
         self.logger.info("StatusTray Exit pressed.")
         print('exit')
@@ -101,18 +101,19 @@ class StatusTray(QtWidgets.QSystemTrayIcon):
         print('exit')
         sys.exit(0)
 
-    @QtCore.Slot(QtWidgets.QSystemTrayIcon.ActivationReason)
+    @QtCore.pyqtSlot(QtWidgets.QSystemTrayIcon.ActivationReason)
     @util.guiNoExcept()
     def handleActivated(self, reason):
         if reason == QtWidgets.QSystemTrayIcon.DoubleClick:
             self._toggleMainWindow()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.guiNoExcept()
     def showMainWindow(self):
+        self.mw.setWindowState(self.mw.windowState() & ~QtCore.Qt.WindowMinimized)
         self.mw.show()
-        if self.mw.isMinimized():
-            self.mw.showNormal()
+        self.mw.raise_()
+        self.mw.activateWindow()
 
     def _toggleMainWindow(self):
         if not self.mw.isVisible():

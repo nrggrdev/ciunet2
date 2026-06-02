@@ -1,7 +1,7 @@
 import logging
 import time
 import threading
-from Qt import QtCore, QtWidgets, QtGui
+from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5 import Qt
 
 from python_util import util as util
@@ -17,8 +17,8 @@ class DisplayLabel(QtWidgets.QLabel):
 
 class labelState(QtWidgets.QWidget):
 #class labelState(QtWidgets.QRadioButton):
-    finished=QtCore.Signal()
-    triggerChange=QtCore.Signal(object)
+    finished=QtCore.pyqtSignal()
+    triggerChange=QtCore.pyqtSignal(object)
     def __init__(self,desc,timeout=1,interval=10):
         super(labelState, self).__init__()
         self.red=QtGui.QPixmap('icon/red.png').scaledToHeight(20)
@@ -77,7 +77,7 @@ class labelState(QtWidgets.QWidget):
         self.graph.start(ts)
 import numpy
 class miniPlot(QtWidgets.QLabel):
-    finished= QtCore.Signal()
+    finished= QtCore.pyqtSignal()
     def __init__(self,parent,interval):
         super(miniPlot, self).__init__(parent)
         self.firsttimestamp=0
@@ -435,10 +435,10 @@ class scanlinePlot(QtWidgets.QGroupBox):
         self.control.setStatusMode.connect(self.plot.setStatusMode)
 
 class plotControll(QtWidgets.QWidget):
-    trigger=QtCore.Signal()
-    setVideoMode=QtCore.Signal(object)
-    SignalSetFOV=QtCore.Signal(object)
-    setStatusMode=QtCore.Signal(object)
+    trigger=QtCore.pyqtSignal()
+    setVideoMode=QtCore.pyqtSignal(object)
+    SignalSetFOV=QtCore.pyqtSignal(object)
+    setStatusMode=QtCore.pyqtSignal(object)
     def __init__(self,parent):
         QtWidgets.QWidget.__init__(self,parent=parent)
         self.layout=QtWidgets.QVBoxLayout()
@@ -1084,7 +1084,7 @@ class ScannerInfo(QtWidgets.QWidget):
 
         QtCore.QMetaObject.invokeMethod(self.update_timer, "start")
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def update_data(self):
         try:

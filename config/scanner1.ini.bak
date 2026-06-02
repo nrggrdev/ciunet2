@@ -1,16 +1,14 @@
-# ************************************************************************************************
-# SCANNER1 14bit tower
-# ************************************************************************************************
+# ******************************************************************************
+# SCANNER1
+# ******************************************************************************
 
 # Scanner model
 # [ name: model, type: str ]
-model = TMC6-1DH3
+model = TMCx-1DH3
 
 # Scanner serial number
 # [ name: serial, type: str ]
-# calibration data entered jh180911a
-# Tower Scanner
-serial = 6H181217A
+serial = 8H180807C
 
 # FOV of the scanner
 # [ name: fov_angle, unit: degree, default: 120.0 ]
@@ -43,7 +41,7 @@ mask = ./config/scannerMask1.csv
 
 # Vertical offset in degrees
 # [ name: angle_offset, type = float, valid range: [0.0, 360.0), default: 2.0 ]
-vertical_offset = 0.0
+vertical_offset = 5.0
 
 # Reverse scanner data horizontally
 # [ name: reverse_h, type: boolean, default: False ]
@@ -56,66 +54,66 @@ reverse_v = False
 # Scanner Timeout
 # Scanner is considered timed out, if no valid data has been received for this time.
 # [ name: timeout, type: float, unit: seconds, default: 10.0 ]
-timeout = 30.0
-
+timeout = 10.0
+max_FOV_V=150000
 
 # Everything related to Data Aqusition from the DaLi NETA module goes in here
 [receiver]
 # IP Multicast Group to join when listening for data
 # [ name: multicastGroup, type = IPv4 string, default: 239.1.1.1 ]
-multicastGroup = 
+multicastGroup = 239.1.1.1
 
 # Network Interface to which receiver UDP socket is bound to
 # Specification is a valid IP interface Address, IPv4 or IPv6 following RFC5952
 # specification.
 # If not specified, the socket will not be bound to a specific interface
 # [ name: interface, type: IPv4/6 string ]
-interface=192.168.10.202
+interface=192.168.11.201
 
 # Source IP to listen to
 # [ name: source, type: string, valid range: IP address ]
-#source = 192.168.11.1
-source = 192.168.21.1
+#source = 192.168.61.1
+source = 192.168.71.2
+
+
 
 # UDP port to listen on
 # [ name: port, type: 16Bit unsigned integer, valid range: 0 to 65535, default: 51002 ]
-port = 51211
-triggerchannel=1
-triggeredge=rising
-
+port = 51002
+triggerchannel=4
+[dali_control]
+aktiv = False
+timeout = 300s
+ip = 192.168.11.11
+coil = 0
+delay = 2.0
+normalOpen = true
 [geometry]
 # Passpoint #1 angle in FOV
 # [ name: phi0, type: float, unit: degrees default: 30.0 ]
-#phi1 = 14.35
-#phi1 = 6.5
-phi1 = 7.45
-#phi1 = 39.72
+phi1 = 10.30
 
 # Passpoint #1 position on the kiln surface, as measured form kiln start.
 # [ name: pass1, type: float, unit: as specified in kiln/length_unit, default: 20.0 ]
-#pass1 = 141.1
-#pass1 = 140.1
-pass1 = 135
-#pass1 = 52.4
+pass1 = 48
 
 # Passpoint #2 angle in FOV
 # [ name: phi1, type: float, unit: degrees default: 90.0 ]
-phi2 = 67.8
+phi2 = 94.48
 
 # Passpoint #2 position on the kiln surface, as measured form kiln start.
 # [ name: pass2, type: float, unit: as specified in kiln/length_unit, default: 80.0 ]
-pass2 = 36.1
+pass2 = 5.2
 
 # tilt angle of the scanner to the left of the perpendicular scanner to kiln
 # Please note that the middle of the FoV is dependen on the scanner fov_angle setting.
 # [ name: tilt, type: float, unit: degrees, default: 0.0 ]
-tilt = 20.5
-#tilt = 18.0
+tilt = 2.5
+
 
 [temperature]
-# calibration data entered jh180911a
-####################################
-
+# calibration values entered jh180911
+######################################
 
 # Temperature Transformation Mode
 #
@@ -132,33 +130,33 @@ temperatureTransformationMode = withReferences
 
 # Configuration Temperature Unit
 # [ name: temp_unit, type: string, valid range: {C,K,F}, default: C ]
-temp_unit = F
+temp_unit = C
 
 # ADC offset
 # Used with mode == 'parameters'
 # [ name: u0, type = float, default: see scanner calibration sheet ]
-u0 = 825.94
+u0 = 838.57
 
 # Used with mode == 'parameters'
 # [ name: A, type = float, default: see scanner calibration sheet ]
-A = -82025
+A = -706132
 
 # "Spectral" instrument constant (K) *. (Theoretically B ~= 14388 / λ)
 # * The value is sufficient for T<100°C and herewith for LT scanners. The value will be provided at the initial
 # delivery.
 # λ = Central wavelength of used spectrum (μm).
 # [ name: B, type = float, default: see scanner calibration sheet ]
-B = 3780
+B = 3780.0
 
 # "Auxiliary" constant *
 # The value is sufficient for T<100°C and herewith for LT scanners. The value will be provided at the initial
 # delivery.
 # [ name: C, type = float, invalid values: 0.0, default: see scanner calibration sheet ]
-C = -0.07
+C = -0.70
 
 # ε0 = Emissivity factor of the object.
 # [ name: object_emission, type = float, default: 0.95 for a kiln with rusty surface ]
-ε0 = 1.0
+ε0 = 0.78
 
 # τa = Transmission factor of the atmosphere between the scanner and the object.
 # [ name: atmospheric_transmission, type = float, default: see scanner calibration sheet ]
@@ -226,7 +224,7 @@ P1_temp_source = temperature_scanner
 # Reference 1 static temperature value
 # Used with mode == 'withReferences' && P1_temp_static==True
 # [ name: P1_temp, type = float, unit = 'temp_unit' defined previously ]
-P1_temp = 167.0
+P1_temp = 27.0
 
 # Use static value for Reference 1 digital value
 # [ name: P1_dig_static, type: boolean, default: True ]
@@ -235,7 +233,7 @@ P1_dig_static = True
 # Reference 1 static digit value
 # Used with mode == 'withReferences' && P1_dig_static==True
 # [ name: P1_dig, type = unsigned integer ]
-P1_dig = 849.0
+P1_dig = 825.0
 
 # Reference 1 dynamic digit source
 # References a [analogN] value 
@@ -267,7 +265,7 @@ P2_temp_source =
 # Reference 2 static temperature value
 # Used with mode == 'withReferences' && P2_temp_static==True
 # [ name: P2_temp, type = float, unit = 'temp_unit' defined previously ]
-P2_temp = 482.0
+P2_temp = 250.0
 
 # Use static value for Reference 2 digital value
 # [ name: P2_dig_static, type: boolean, default: True ]
@@ -276,8 +274,7 @@ P2_dig_static = True
 # Reference 2 static digit value
 # Used with mode == 'withReferences' && P2_dig_static==True
 # [ name: P2_dig, type = unsigned integer ]
-P2_dig = 1670.0
-
+P2_dig = 1556.0
 
 # Reference 2 dynamic digit source
 # References a [analogN] value 
@@ -287,7 +284,7 @@ P2_live_reference = HighRef
 
 # Factor by which the digital value (static or dynamic) for Reference 2 is multiplied.
 # [ name: P2_dig_factor, type = float, default: 1.0 ]
-P2_dig_factor = 0.83
+P2_dig_factor = 1.0
 
 # Reference 2 emission
 # Used when calculating u0/A.
@@ -317,15 +314,18 @@ source = temperature_scanner
 # Configuration Temperature Unit
 # Used for lower/upper limit
 # [ name: temp_unit, type: string, valid range: {C,K,F}, default: C ]
-temp_unit = F
+temp_unit = C
 
 # Internal Temperature lower limit
 # [ name: lowerLimit, type: float, unit = "as specified in temp_unit", default: 0.0C ]
-lowerLimit = 32.0
+lowerLimit = 0.0
 
 # Upper Temperature lower limit
 # [ name: upperLimit, type: float, unit = "as specified in temp_unit", default: 60.0C ]
-upperLimit = 140.0
+upperLimit = 60.0
+
+
+
 
 
 [analog_1]
@@ -358,28 +358,28 @@ composer = average
 size = 1
 
 [analog_3]
-name = Pyr7
+name = ANA3
 startPos = 99.32
 endPos = 107.32
 composer = average
 size = 1
 
 [analog_4]
-name = Pyr8
+name = ANA4
 startPos = 249.08
 endPos = 257.08
 composer = average
 size = 1
 
 [analog_5]
-name = Pyr9
+name = ANA5
 startPos = 264.2
 endPos = 272.2
 composer = average
 size = 1
 
 [analog_6]
-name = Pyr10
+name = ANA6
 startPos = 278.6
 endPos = 286.6
 composer = average
@@ -394,8 +394,10 @@ size = 60
 
 [analog_8]
 name = Internal_Temperature
+#startPos = 152.16
 startPos = 164.00
 endPos = 165.0
+#endPos = 156.16
 composer = average
 size = 20
 
@@ -444,11 +446,11 @@ source = Internal_Temperature
 
 # Configuration Temperature Unit
 # [ name: temp_unit, type: string, valid range: {C,K,F}, default: C ]
-temp_unit = F
+temp_unit = C
 
 # Temperature calibration passpoint1 digital value
 # [ name: P1_dig, type = float, default: 570.0 ]
-P1_dig = 2240.0
+P1_dig = 2326.0
 
 # Temperature calibration passpoint1 digital value factor
 # [ name: P1_factor, type = float, default: 1.0 ]
@@ -464,7 +466,7 @@ P1_temp = -40.0
 
 # Temperature calibration passpoint1 digital value
 # [ name: P2_dig, type = float, default: 2180.0 ]
-P2_dig = 8720.0
+P2_dig = 8750.0
 
 # Temperature calibration passpoint1 digital value factor
 # [ name: P2_factor, type = float, default: 1.0 ]
@@ -476,7 +478,7 @@ P2_offset = 0.0
 
 # Temperature calibration passpoint1 temperature value
 # [ name: P2_temp, type = float, unit = "as specified in temp_unit", default: 60.0C ]
-P2_temp = 140.0
+P2_temp = 60.0
 
 
 
@@ -485,12 +487,12 @@ P2_temp = 140.0
 # Number of pyrometers to use.
 # For each pyrometer, there must be a configuration subsection named 'pyrometer_N' 
 # [ name: npyrometers, type: unsigned integer ]
-npyrometers = 4
+npyrometers = 0
 
 [[pyrometer_1]]
 # Name of analog_# value used for pyrometer
 # [ name: source, type: string, default: "Analog1" ]
-source = Pyr7
+source = ANA2
 
 # Reverse pyrometer data vertically
 # [ name: reverse_v, type: boolean, default: False ]
@@ -498,7 +500,7 @@ reverse_v = False
 
 # Vertical offset in degrees
 # [ name: angle_offset, type = float, valid range: 0 to 360 ]
-vertical_offset = 205
+vertical_offset = 50
 
 # Pyrometer Display mask
 # A list of kiln ranges in the form of "start , end" separated by a new line
@@ -506,19 +508,19 @@ vertical_offset = 205
 # of the according scanner
 # start and end are of type float
 # [ type = fileName ]
-mask = ./config/scanner1_pyrometer7.csv
+mask = ./config/scanner1_pyrometer1Mask.csv
 
 # Configuration Temperature Unit
 # [ name: temp_unit, type: string, valid range: {C,K,F}, default: C ]
-temp_unit = F
+temp_unit = C
 
 # Temperature calibration passpoint1 digital value
 # [ name: P1_dig, type = float, default: 514.0 ]
-P1_dig = 3200.0
+P1_dig = 814.0
 
 # Temperature calibration passpoint1 digital value factor
 # [ name: P1_factor, type = float, default: 1.0 ]
-P1_factor = 0.85
+P1_factor = 1.0
 
 # Temperature calibration passpoint1 digital value offset
 # [ name: P1_offset, type = float, default: 0.0 ]
@@ -526,16 +528,15 @@ P1_offset = 0.0
 
 # Temperature calibration passpoint1 temperature value
 # [ name: P1_temp, type = float, unit = "as specified in temp_unit", default: -40.0C ]
-; P1_temp = 167.0
-P1_temp = 172.0
+P1_temp = 560.0
 
 # Temperature calibration passpoint2 digital value
 # [ name: P2_dig, type = float, default: 2160.0 ]
-P2_dig = 13396.0
+P2_dig = 3379.0
 
 # Temperature calibration passpoint2 digital value factor
 # [ name: P2_factor, type = float, default: 1.0 ]
-P2_factor = 0.85
+P2_factor = 1.0
 
 # Temperature calibration passpoint2 digital value offset
 # [ name: P2_offset, type = float, default: 0.0 ]
@@ -543,19 +544,17 @@ P2_offset = 0.0
 
 # Temperature calibration passpoint1 temperature value
 # [ name: P2_temp, type = float, unit = "as specified in temp_unit", default: 60.0C ]
-; P2_temp = 1047.0
-P2_temp = 905.0
+P2_temp = 800.0
 
 
 # List of temperature objects which can be used for either
 # internal temperature source, or for online temperature recalibration.
 # each section needs to begin with the keyword "temperature", and the full
 # section name is used as the identifier.
-
 [[pyrometer_2]]
 # Name of analog_# value used for pyrometer
 # [ name: source, type: string, default: "Analog1" ]
-source = Pyr8
+source = ANA2
 
 # Reverse pyrometer data vertically
 # [ name: reverse_v, type: boolean, default: False ]
@@ -571,15 +570,15 @@ vertical_offset = 50
 # of the according scanner
 # start and end are of type float
 # [ type = fileName ]
-mask = ./config/scanner1_pyrometer8.csv
+mask = ./config/scanner1_pyrometer1Mask.csv
 
 # Configuration Temperature Unit
 # [ name: temp_unit, type: string, valid range: {C,K,F}, default: C ]
-temp_unit = F
+temp_unit = C
 
 # Temperature calibration passpoint1 digital value
 # [ name: P1_dig, type = float, default: 514.0 ]
-P1_dig = 3200.0
+P1_dig = 814.0
 
 # Temperature calibration passpoint1 digital value factor
 # [ name: P1_factor, type = float, default: 1.0 ]
@@ -591,12 +590,11 @@ P1_offset = 0.0
 
 # Temperature calibration passpoint1 temperature value
 # [ name: P1_temp, type = float, unit = "as specified in temp_unit", default: -40.0C ]
-; P1_temp = 167.0
-P1_temp = 172.0
+P1_temp = 560.0
 
 # Temperature calibration passpoint2 digital value
 # [ name: P2_dig, type = float, default: 2160.0 ]
-P2_dig = 13396.0
+P2_dig = 3379.0
 
 # Temperature calibration passpoint2 digital value factor
 # [ name: P2_factor, type = float, default: 1.0 ]
@@ -608,19 +606,17 @@ P2_offset = 0.0
 
 # Temperature calibration passpoint1 temperature value
 # [ name: P2_temp, type = float, unit = "as specified in temp_unit", default: 60.0C ]
-; P2_temp = 1047.0
-P2_temp = 905.0
+P2_temp = 800.0
 
 
 # List of temperature objects which can be used for either
 # internal temperature source, or for online temperature recalibration.
 # each section needs to begin with the keyword "temperature", and the full
 # section name is used as the identifier.
-
 [[pyrometer_3]]
 # Name of analog_# value used for pyrometer
 # [ name: source, type: string, default: "Analog1" ]
-source = Pyr9
+source = ANA2
 
 # Reverse pyrometer data vertically
 # [ name: reverse_v, type: boolean, default: False ]
@@ -636,15 +632,15 @@ vertical_offset = 50
 # of the according scanner
 # start and end are of type float
 # [ type = fileName ]
-mask = ./config/scanner1_pyrometer9.csv
+mask = ./config/scanner1_pyrometer1Mask.csv
 
 # Configuration Temperature Unit
 # [ name: temp_unit, type: string, valid range: {C,K,F}, default: C ]
-temp_unit = F
+temp_unit = C
 
 # Temperature calibration passpoint1 digital value
 # [ name: P1_dig, type = float, default: 514.0 ]
-P1_dig = 3200.0
+P1_dig = 814.0
 
 # Temperature calibration passpoint1 digital value factor
 # [ name: P1_factor, type = float, default: 1.0 ]
@@ -656,12 +652,11 @@ P1_offset = 0.0
 
 # Temperature calibration passpoint1 temperature value
 # [ name: P1_temp, type = float, unit = "as specified in temp_unit", default: -40.0C ]
-; P1_temp = 167.0
-P1_temp = 172.0
+P1_temp = 560.0
 
 # Temperature calibration passpoint2 digital value
 # [ name: P2_dig, type = float, default: 2160.0 ]
-P2_dig = 13396.0
+P2_dig = 3379.0
 
 # Temperature calibration passpoint2 digital value factor
 # [ name: P2_factor, type = float, default: 1.0 ]
@@ -673,19 +668,17 @@ P2_offset = 0.0
 
 # Temperature calibration passpoint1 temperature value
 # [ name: P2_temp, type = float, unit = "as specified in temp_unit", default: 60.0C ]
-; P2_temp = 1047.0
-P2_temp = 905.0
+P2_temp = 800.0
 
 
 # List of temperature objects which can be used for either
 # internal temperature source, or for online temperature recalibration.
 # each section needs to begin with the keyword "temperature", and the full
 # section name is used as the identifier.
-
 [[pyrometer_4]]
 # Name of analog_# value used for pyrometer
 # [ name: source, type: string, default: "Analog1" ]
-source = Pyr10
+source = ANA2
 
 # Reverse pyrometer data vertically
 # [ name: reverse_v, type: boolean, default: False ]
@@ -701,15 +694,15 @@ vertical_offset = 50
 # of the according scanner
 # start and end are of type float
 # [ type = fileName ]
-mask = ./config/scanner1_pyrometer10.csv
+mask = ./config/scanner1_pyrometer1Mask.csv
 
 # Configuration Temperature Unit
 # [ name: temp_unit, type: string, valid range: {C,K,F}, default: C ]
-temp_unit = F
+temp_unit = C
 
 # Temperature calibration passpoint1 digital value
 # [ name: P1_dig, type = float, default: 514.0 ]
-P1_dig = 3200.0
+P1_dig = 814.0
 
 # Temperature calibration passpoint1 digital value factor
 # [ name: P1_factor, type = float, default: 1.0 ]
@@ -721,12 +714,11 @@ P1_offset = 0.0
 
 # Temperature calibration passpoint1 temperature value
 # [ name: P1_temp, type = float, unit = "as specified in temp_unit", default: -40.0C ]
-; P1_temp = 167.0
-P1_temp = 172.0
+P1_temp = 560.0
 
 # Temperature calibration passpoint2 digital value
 # [ name: P2_dig, type = float, default: 2160.0 ]
-P2_dig = 13396.0
+P2_dig = 3379.0
 
 # Temperature calibration passpoint2 digital value factor
 # [ name: P2_factor, type = float, default: 1.0 ]
@@ -738,20 +730,17 @@ P2_offset = 0.0
 
 # Temperature calibration passpoint1 temperature value
 # [ name: P2_temp, type = float, unit = "as specified in temp_unit", default: 60.0C ]
-; P2_temp = 1047.0
-P2_temp = 905.0
+P2_temp = 800.0
 
 
 # List of temperature objects which can be used for either
 # internal temperature source, or for online temperature recalibration.
 # each section needs to begin with the keyword "temperature", and the full
 # section name is used as the identifier.
-
-
 [[pyrometer_5]]
 # Name of analog_# value used for pyrometer
 # [ name: source, type: string, default: "Analog1" ]
-source = ANA6
+source = ANA2
 
 # Reverse pyrometer data vertically
 # [ name: reverse_v, type: boolean, default: False ]
@@ -767,15 +756,15 @@ vertical_offset = 50
 # of the according scanner
 # start and end are of type float
 # [ type = fileName ]
-mask = ./config/scanner2mask1.csv
+mask = ./config/scanner1_pyrometer1Mask.csv
 
 # Configuration Temperature Unit
 # [ name: temp_unit, type: string, valid range: {C,K,F}, default: C ]
-temp_unit = F
+temp_unit = C
 
 # Temperature calibration passpoint1 digital value
 # [ name: P1_dig, type = float, default: 514.0 ]
-P1_dig = 3200.0
+P1_dig = 814.0
 
 # Temperature calibration passpoint1 digital value factor
 # [ name: P1_factor, type = float, default: 1.0 ]
@@ -787,12 +776,11 @@ P1_offset = 0.0
 
 # Temperature calibration passpoint1 temperature value
 # [ name: P1_temp, type = float, unit = "as specified in temp_unit", default: -40.0C ]
-; P1_temp = 167.0
-P1_temp = 172.0
+P1_temp = 560.0
 
 # Temperature calibration passpoint2 digital value
 # [ name: P2_dig, type = float, default: 2160.0 ]
-P2_dig = 13396.0
+P2_dig = 3379.0
 
 # Temperature calibration passpoint2 digital value factor
 # [ name: P2_factor, type = float, default: 1.0 ]
@@ -804,5 +792,10 @@ P2_offset = 0.0
 
 # Temperature calibration passpoint1 temperature value
 # [ name: P2_temp, type = float, unit = "as specified in temp_unit", default: 60.0C ]
-; P2_temp = 1047.0
-P2_temp = 905.0
+P2_temp = 800.0
+
+
+# List of temperature objects which can be used for either
+# internal temperature source, or for online temperature recalibration.
+# each section needs to begin with the keyword "temperature", and the full
+# section name is used as the identifier.

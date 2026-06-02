@@ -6,7 +6,7 @@ import traceback
 import time
 from pymodbus.client import ModbusTcpClient
 #from pymodbus.client.sync import ModbusTcpClient
-from Qt import QtCore
+from PyQt5 import QtCore
 import numpy
 import pprint
 
@@ -30,9 +30,9 @@ class Scanner(Sensor.Sensor):
     - handle all line-based data processing/transformation
     - emit processed scanner lines and other data for further image composition
     """
-    signal_got_internal_trigger = QtCore.Signal(object)
-    signalTimeout = QtCore.Signal(object)
-    signalTimeout2 = QtCore.Signal(object)
+    signal_got_internal_trigger = QtCore.pyqtSignal(object)
+    signalTimeout = QtCore.pyqtSignal(object)
+    signalTimeout2 = QtCore.pyqtSignal(object)
 
     def __init__(self, config, scanner_index, sensor_index, config_path, kiln):
         Sensor.Sensor.__init__(self, config, sensor_index, kiln=kiln, parent=kiln)
@@ -120,7 +120,7 @@ class Scanner(Sensor.Sensor):
     def name(self):
         return f"{self.type}"#_{self.displayIndex}"
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def start(self):
         self.logger.debug("Starting scanner")
@@ -157,13 +157,13 @@ class Scanner(Sensor.Sensor):
             self.logger.error('modbus write coil failed')
         time.sleep(delay)
         self.restarting=False
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def stop(self):
         self.logger.debug("Stopping scanner")
         QtCore.QMetaObject.invokeMethod(self.receiver, "stop")
 
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
     @util.noexcept
     def externTrigger(self, data):
         # if self.last_line is None:
@@ -254,7 +254,7 @@ class Scanner(Sensor.Sensor):
     def filter_line(self, data):
         return self.moving_average(data, 1)
 
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
 #    @util.noexcept
     def receiveLine(self, rawline):
         """
@@ -308,7 +308,7 @@ class Scanner(Sensor.Sensor):
     def internal_temperature(self):
         return self.internalTemperature.get_value()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def __checkTimeout(self):
         scannerStatusBefore = self.timeOutStatus

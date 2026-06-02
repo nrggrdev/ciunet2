@@ -1,16 +1,16 @@
 import json
 import logging
 
-from Qt import QtNetwork as QTN
-from Qt import QtCore
+from PyQt5 import QtNetwork as QTN
+from PyQt5 import QtCore
 
 from python_util.util.noexcept import noexcept
 from python_util import util
 
 
 class StatusReader(QtCore.QObject):
-    signalGotData = QtCore.Signal(object, object)
-    signal_combined_data = QtCore.Signal(object)
+    signalGotData = QtCore.pyqtSignal(object, object)
+    signal_combined_data = QtCore.pyqtSignal(object)
 
     def __init__(self, config):
         super().__init__()
@@ -26,7 +26,7 @@ class StatusReader(QtCore.QObject):
         self.__groupaddr = QTN.QHostAddress(config["StatusViewer"]["multicastGroup"])
         self.__parsedInterface = config["StatusViewer"]["interface"] if "interface" in config["StatusViewer"] else None
         print (self.__parsedInterface)
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @noexcept
     @util.assert_equal_thread()
     def start(self):
@@ -36,7 +36,7 @@ class StatusReader(QtCore.QObject):
         ni = QTN.QNetworkInterface()
         self.__udpSocket.joinMulticastGroup(self.__groupaddr, ni)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @noexcept
     @util.assert_equal_thread()
     def stop(self):
@@ -84,7 +84,7 @@ class StatusReader(QtCore.QObject):
             self.logger.warning("Could not get binding network interface: {}".format(e))
             return None
 
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
     @noexcept
     def setBindInterface(self, iface):
         self.logger.info("Setting bind interface to {}".format(iface))
@@ -93,7 +93,7 @@ class StatusReader(QtCore.QObject):
         self.__parsedInterface = iface if len(iface) else None
         QtCore.QMetaObject.invokeMethod(self, "start")
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @noexcept
     def __readIncomingData(self):
         if not self.__udpSocket.hasPendingDatagrams():

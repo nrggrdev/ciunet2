@@ -5,7 +5,10 @@ a = Analysis(
     ['ciu_net.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[
+        ('config', 'config'),
+        ('icon', 'icon'),
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

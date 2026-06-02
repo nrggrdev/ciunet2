@@ -5,7 +5,7 @@ from collections import deque
 import itertools
 import threading
 
-from Qt import QtCore
+from PyQt5 import QtCore
 import numpy
 from scipy import interpolate
 
@@ -68,7 +68,7 @@ class SingleImage(QtCore.QObject):
         self.lines.clear()
         self.num_raw_lines = 0
 
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
     @util.noexcept
     def trigger_changed(self, sensor):
         """register a change in trigger timestamps of the associated sensor"""
@@ -363,7 +363,7 @@ class SingleImage(QtCore.QObject):
 
 class ComposedImage(QtCore.QObject):
     """Thermal image consisting of one SingleImage per sensor"""
-    signal_image_updates = QtCore.Signal()
+    signal_image_updates = QtCore.pyqtSignal()
 
     def __init__(self, config, parent):
         super().__init__(parent)
@@ -443,7 +443,7 @@ class ComposedImage(QtCore.QObject):
         except Exception as _e:
             return False
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def trigger(self):
         pass
 
@@ -502,7 +502,7 @@ class ComposedImage(QtCore.QObject):
         num_raw_lines = [num_raw_lines for num_raw_lines, _data in image_data]
         self._rawlines = accu(num_raw_lines)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def update_image(self):
         self.logger.debug("Updating image.")
@@ -513,7 +513,7 @@ class ComposedImage(QtCore.QObject):
         self.build_data()
         self.signal_image_updates.emit()
 
-    @QtCore.Slot(object, object)
+    @QtCore.pyqtSlot(object, object)
     def addLine(self, line, scanner):
         """
         :type line: convertedLine

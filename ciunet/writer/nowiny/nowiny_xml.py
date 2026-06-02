@@ -4,7 +4,7 @@ from collections import OrderedDict
 import datetime
 from xml.dom.minidom import parseString
 
-from Qt import QtCore
+from PyQt5 import QtCore
 import numpy
 import requests
 import pyxb
@@ -103,7 +103,7 @@ class NowinyXMLWriter(QtCore.QObject):
         self.log_xml(xml_output)
         self.post_data(xml_output)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def registerTrigger(self):
         try:

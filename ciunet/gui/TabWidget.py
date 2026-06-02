@@ -1,7 +1,7 @@
 import logging
 import copy
 
-from Qt import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 from python_util import util as util
 from . import LogView
@@ -32,11 +32,11 @@ class TabWidget(QtWidgets.QTabWidget):
         self.set_display_loglevel(loglevel)
         self.deviceStatus = DeviceStatus.DeviceStatus(self)
         self.addTab(self.deviceStatus, self.tr("Status Viewer"))
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
 
     def setLoggingPause(self,data):
         self.logViewer.setPause(data)
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
     @util.noexcept
     def set_display_loglevel(self, logging_level):
         self.logger.info("Setting logging level to {}.".format(logging_level))
@@ -70,7 +70,7 @@ class TabWidget(QtWidgets.QTabWidget):
             self.filter.setFilterclass(item)
 
 class MyFilter(logging.Filter, QtCore.QObject):
-    newLoggingCLass=QtCore.Signal(object)
+    newLoggingCLass=QtCore.pyqtSignal(object)
     def __init__(self,level=20):
         QtCore.QObject.__init__(self)
         self.loggingTypes=set()

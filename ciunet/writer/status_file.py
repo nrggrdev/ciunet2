@@ -1,7 +1,7 @@
 import os
 import configparser
 
-from Qt import QtCore
+from PyQt5 import QtCore
 
 from daq_net.daq import Temperature
 from python_util import util as util
@@ -18,7 +18,7 @@ class StatusFileWriter(QtCore.QObject):
         self.status_writer_timer.timeout.connect(self._write_status_INI_file)
         self.kiln = kiln
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def start(self):
         try:
@@ -26,7 +26,7 @@ class StatusFileWriter(QtCore.QObject):
         except Exception as e:
             print (e)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def _write_status_INI_file(self):
         try:

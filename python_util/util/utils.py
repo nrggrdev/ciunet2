@@ -1,6 +1,6 @@
 import collections
 from contextlib import contextmanager
-from Qt import QtGui, QtCore
+from PyQt5 import QtGui, QtCore
 
 
 def flattenArgs(items):

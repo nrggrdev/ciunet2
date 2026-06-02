@@ -1,6 +1,6 @@
 import logging
 
-from Qt import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 import pprint
 
 from python_util import util as util
@@ -11,7 +11,7 @@ class DeviceStatusWorkerThread(util.WorkerThread):
 
 
 class DeviceStatus(QtWidgets.QScrollArea):
-    signal_multiple_devices_per_host = QtCore.Signal(object, object, object)
+    signal_multiple_devices_per_host = QtCore.pyqtSignal(object, object, object)
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -32,12 +32,12 @@ class DeviceStatus(QtWidgets.QScrollArea):
     def clear(self):
         pass
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def stop(self):
         pass
 
-    @QtCore.Slot(object, object)
+    @QtCore.pyqtSlot(object, object)
     @util.assert_equal_thread()
     def receiveData(self, data, host):
         self.data[host] = {"received": str(util.datetime_helper.current_local_time()), "data": data}
@@ -54,7 +54,7 @@ class DeviceStatus(QtWidgets.QScrollArea):
             print(e)
             pass
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def draw(self):
         if self.isVisible():
             self.label.setText(pprint.pformat(self.data))

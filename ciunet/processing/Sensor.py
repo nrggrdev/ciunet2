@@ -1,7 +1,7 @@
 import logging
 
 import numpy
-from Qt import QtCore
+from PyQt5 import QtCore
 
 from python_util import util as util
 
@@ -47,15 +47,15 @@ def _createMask(kiln, maskfile, targetpixel):
 
 class Sensor(QtCore.QObject):
     """base class for scanner and pyrometer"""
-    signal_got_trigger = QtCore.Signal(object)
-    sigConvertedLine = QtCore.Signal(object, object)
+    signal_got_trigger = QtCore.pyqtSignal(object)
+    sigConvertedLine = QtCore.pyqtSignal(object, object)
 
     def __init__(self, config, sensor_index, kiln, parent):
         super().__init__(parent=parent)
         self.index = sensor_index[0]
         sensor_index[0] += 1
         kiln.sensors[self.index] = self
-        self.reverse_vertical = util.str2bool(config["reverse_v"])
+        self.reverse_vertical = util.str2bool(config.get("reverse_v", "False"))
         self.vertical_offset = float(config["vertical_offset"])
         if "linedata" in config:
             self.hasLinedata=util.str2bool(config["linedata"])

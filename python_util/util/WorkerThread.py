@@ -1,6 +1,6 @@
 import logging
 
-from Qt import QtCore
+from PyQt5 import QtCore
 
 
 class WorkerThread(QtCore.QThread):

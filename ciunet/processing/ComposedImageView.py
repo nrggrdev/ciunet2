@@ -1,7 +1,7 @@
 import warnings
 import logging
 
-from Qt import QtCore
+from PyQt5 import QtCore
 import numpy
 
 

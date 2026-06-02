@@ -2,7 +2,7 @@ import logging
 import json
 import datetime
 
-from Qt import QtCore, QtNetwork
+from PyQt5 import QtCore, QtNetwork
 
 from daq_net.daq.TriggerReceiver import TriggerReceiver
 from python_util import util as util
@@ -13,7 +13,7 @@ class TireslipReceiverThread(util.WorkerThread):
 
 
 class TireSlipTrigger(QtCore.QObject):
-    signal_trigger = QtCore.Signal(object)
+    signal_trigger = QtCore.pyqtSignal(object)
 
     def __init__(self, trigger_config, parent):
         super().__init__(parent)
@@ -46,7 +46,7 @@ class TireSlipTrigger(QtCore.QObject):
             self.logger.warning("Could not get binding network interface: {}".format(e))
             return None
 
-    @QtCore.Slot(object, object)
+    @QtCore.pyqtSlot(object, object)
     @util.noexcept
     def receive_tireslip_trigger(self, data, _host):
         # print(_host, data, QtCore.QThread.currentThread())

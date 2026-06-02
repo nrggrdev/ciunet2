@@ -2,12 +2,12 @@ import logging
 import traceback
 import functools
 
-from Qt import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 
 def noexcept(func, logger=logging):
     """ decorator to catch all unhandled exceptions, log them and discard them"""
-    @functools.wraps(func)  # adjusts function meta-data, required eg for QtCore.Slot() decorated functions
+    @functools.wraps(func)  # adjusts function meta-data, required eg for QtCore.pyqtSlot() decorated functions
     def inner(*args, **kwargs):
         try:
             return func(*args, **kwargs)

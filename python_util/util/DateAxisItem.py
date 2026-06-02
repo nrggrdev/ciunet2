@@ -1,7 +1,7 @@
 import numpy as np
 import time
 from datetime import datetime
-from Qt import QtCore
+from PyQt5 import QtCore
 from pyqtgraph.graphicsItems.AxisItem import AxisItem
 
 __all__ = ['DateAxisItem', 'ZoomLevel']

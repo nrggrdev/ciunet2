@@ -6,7 +6,7 @@ import datetime
 import configparser
 import time
 
-from Qt import QtCore
+from PyQt5 import QtCore
 import numpy
 
 from python_util import util as util
@@ -38,7 +38,7 @@ class TextWriter(QtCore.QObject):
         self.scanner_status_data = {}
         self.kiln.signalGotStatusData.connect(self.getStatusData)
 
-    @QtCore.Slot(object, object)
+    @QtCore.pyqtSlot(object, object)
     @util.noexcept
     def getStatusData(self, data, host):
         for scanner in self.kiln.scanners:
@@ -254,7 +254,7 @@ class TextWriter(QtCore.QObject):
         except:
             self.logger.info('creating json file failed')
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def registerTrigger(self):
         self.save_image()

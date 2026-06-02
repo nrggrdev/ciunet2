@@ -1,6 +1,6 @@
 import os
 
-from Qt import QtCore
+from PyQt5 import QtCore
 import numpy
 from PIL import Image
 from PIL.PngImagePlugin import PngInfo
@@ -43,7 +43,7 @@ class ImageWriter(QtCore.QObject):
         with util.save_file.open_savefile(self.png_filename, 'wb') as imageFile:
             img.save(imageFile, format="png", pnginfo=info)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def registerTrigger(self):
         self.save_png()

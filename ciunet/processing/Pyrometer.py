@@ -1,6 +1,6 @@
 import logging
 
-from Qt import QtCore
+from PyQt5 import QtCore
 import numpy
 
 from python_util import util as util
@@ -34,7 +34,7 @@ class Pyrometer(Sensor.Sensor):
             self.analog_index = self.scanner.multiplexedValuesManager.find(self.source)
         if self.pyrometerType=='dali':
             self.analog_index=int(self.source)
-        self.reverse_vertical = util.str2bool(config["reverse_v"])
+        self.reverse_vertical = util.str2bool(config.get("reverse_v", "False"))
         self.__t_mode = Temperature.unit[config["temp_unit"]]
         P1_dig = float(config["P1_dig"])
         P1_factor = float(config["P1_factor"])
@@ -54,7 +54,7 @@ class Pyrometer(Sensor.Sensor):
 
         self.logger.debug("Created pyrometer with config={}".format(config))
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def receiveLine(self):
         def generate_data(target_pixel, value):

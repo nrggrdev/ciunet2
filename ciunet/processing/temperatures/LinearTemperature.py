@@ -1,6 +1,6 @@
 import logging
 
-from Qt import QtCore
+from PyQt5 import QtCore
 import numpy
 
 from python_util import util as util
@@ -50,7 +50,7 @@ class LinearTemperature(QtCore.QObject):
         else:
             raise RuntimeError("Invalid source type: {}".format(self.source_type))
 
-    @QtCore.Slot(object, object)
+    @QtCore.pyqtSlot(object, object)
     @util.noexcept
     def getStatusData(self, data, host):
         if self.host != host:

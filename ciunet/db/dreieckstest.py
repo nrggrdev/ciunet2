@@ -20,7 +20,7 @@ dfxy['interval']=dfxy.diff()
 dfxy['interval']=pandas.to_numeric(dfxy['interval'])
 dfxy.dropna(inplace=True)
 dfxy['interval']=pandas.to_numeric(dfxy['interval'])
-dfxy.loc[dfxy.interval < 0].interval += 4294967295
+dfxy.loc[dfxy.interval < 0, 'interval'] += 4294967295
 interval1=(dfxy[::2].interval.mean())
 interval2=(dfxy[1::2].interval.mean())
 print( interval1, interval2)

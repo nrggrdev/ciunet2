@@ -1,8 +1,8 @@
 import logging
 import json
 
-from Qt import QtCore
-from Qt import QtNetwork
+from PyQt5 import QtCore
+from PyQt5 import QtNetwork
 
 from python_util import util as util
 
@@ -21,12 +21,12 @@ class StatusTransmitter(QtCore.QObject):
         self.md = {}
         self.enj = json.JSONEncoder()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def start(self):
         self.updateTimer.start()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def __updateStatus(self):
         try:

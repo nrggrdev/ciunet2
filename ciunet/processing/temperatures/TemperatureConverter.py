@@ -2,7 +2,7 @@ import numpy
 import logging
 import math
 
-from Qt import QtCore
+from PyQt5 import QtCore
 
 from python_util import util as util
 from daq_net.daq import Temperature
@@ -163,7 +163,7 @@ class TemperatureConverter(QtCore.QObject):
         self.reference_invalidator_timer.timeout.connect(self.invalidate_references)
         self.reference_invalidator_timer.start()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def invalidate_references(self):
         self.logger.debug("Invalidating reference values.")
         self.live_references_valid = False

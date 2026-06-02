@@ -586,60 +586,70 @@ class tireDouble(object):
         except Exception as e:
             self.maxAlarmSlip=self.maxSlip
             self.config["maxAlarmSlip"]=self.maxAlarmSlip
+        try:
+            self.aggregate = self.config["aggregate"].lower()
+            if self.aggregate not in ("min", "max", "avg"):
+                raise ValueError
+        except:
+            self.aggregate = "min"
+            self.config["aggregate"] = self.aggregate
+
+    def _aggregate(self, a, b):
+        if self.aggregate == "max":
+            return max(a, b)
+        elif self.aggregate == "avg":
+            return (a + b) / 2
+        else:  # min
+            return min(a, b)
+
     def updateInfluxStatus(self,online=True):
         self.influxOnline=online
     def getValues(self):
         if not self.influxOnline:
             return None
         nResults=0
-        query_rising = f"select mean(*) from tireslip where id='{self.src1}' and time>now()-{self.average_interval}s ORDER BY time DESC "  # LIMIT {self.average_rotations}'
-        data = self.dbClient.query(query_rising)
-        slip=0
-        clearance=0
-        interval=0
-        self.error=0
-        if len(data)!=0:
-            data=(data)["tireslip"]
-            slip=(data[f"mean_slip"].iloc[-1])
-            clearance=(data[f"mean_clearance"].iloc[-1])
-            interval=(data[f"mean_interval"].iloc[-1])
-            nResults+=1
+        values=[]
+        for src in (self.src1, self.src2):
+            query = f"select mean(*) from tireslip where id='{src}' and time>now()-{self.average_interval}s ORDER BY time DESC "
+            data = self.dbClient.query(query)
+            if len(data)!=0:
+                data=data["tireslip"]
+                values.append({
+                    "slip":     data["mean_slip"].iloc[-1],
+                    "clearance":data["mean_clearance"].iloc[-1],
+                    "interval": data["mean_interval"].iloc[-1],
+                })
+                nResults+=1
 
-        query_rising = f"select mean(*) from tireslip where id='{self.src2}' and time>now()-{self.average_interval}s ORDER BY time DESC "  # LIMIT {self.average_rotations}'
-        data = self.dbClient.query(query_rising)
-        if len(data)!=0:
-            data=(data)["tireslip"]
-            if nResults==1:
-                slip=min((data[f"mean_slip"].iloc[-1]),slip)
-                clearance=min((data[f"mean_clearance"].iloc[-1]),clearance)
-                interval=min((data[f"mean_interval"].iloc[-1]),interval)
-            else:
-                slip = (data[f"mean_slip"].iloc[-1])
-                clearance = (data[f"mean_clearance"].iloc[-1])
-                interval = (data[f"mean_interval"].iloc[-1])
-
-            nResults+=1
-        if nResults>0:
-            self.slip=slip
-            self.clearance=clearance
-            self.r_slip=self.slip/self.U
-            self.r_clearance=self.clearance/self.U
-            self.interval=interval
-            self.error=0
-            self.rpm=60000000/self.interval
-            alarm = 0
-            if self.maxAlarmSlip < self.slip:
-                alarm = 1
-            if self.slip < self.minAlarmSlip:
-                alarm += 2
-            self.status = alarm
-
-            return slip,clearance,interval
-        else:
+        if nResults==0:
             self.error=1
             return None
+
+        slip     = values[0]["slip"]
+        clearance= values[0]["clearance"]
+        interval = values[0]["interval"]
+        if nResults==2:
+            slip     = self._aggregate(values[1]["slip"],      slip)
+            clearance= self._aggregate(values[1]["clearance"], clearance)
+            interval = (values[0]["interval"] + values[1]["interval"]) / 2
+
+        self.slip=slip
+        self.clearance=clearance
+        self.r_slip=self.slip/self.U
+        self.r_clearance=self.clearance/self.U
+        self.interval=interval
+        self.error=0
+        self.rpm=60000000/self.interval
+        alarm = 0
+        if self.maxAlarmSlip < self.slip:
+            alarm = 1
+        if self.slip < self.minAlarmSlip:
+            alarm += 2
+        self.status = alarm
+
+        return slip,clearance,interval
     def tic(self,stable,anfang,ende,interval,gearR=0):
-        pass
+        self.getValues()
     def buildJSON(self):
         print('tire json')
         js = {"time": datetime.utcnow(),
@@ -1057,7 +1067,7 @@ class horizontalSensor3eck(object):
                 dfxy['interval'] = pandas.to_numeric(dfxy['interval'])
                 dfxy.dropna(inplace=True)
                 #dfxy['interval'] = pandas.to_numeric(dfxy['interval'])
-                dfxy.loc[dfxy.interval < 0].interval += 4294967295
+                dfxy.loc[dfxy.interval < 0, 'interval'] += 4294967295
                 interval1 = (dfxy[::2].interval.mean())
                 interval2 = (dfxy[1::2].interval.mean())
 #                    xxx=interval1
@@ -1747,6 +1757,7 @@ class gear(object):
         if self.rising:
             self.dataRising=self.selectData(edge="rising")
             print ('gear rising')
+            data=self.dataRising
 
         if self.falling:
             self.dataFalling=self.selectData(edge="falling")
@@ -1758,7 +1769,7 @@ class gear(object):
 
             else:
                 d1=data
-                data=[d1,self.dataRising]
+                data=[d1,self.dataFalling]
                 data=pandas.concat(data)
 #                data=data.append(self.dataRising)
                 print('gear merge')

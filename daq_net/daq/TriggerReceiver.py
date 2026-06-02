@@ -1,14 +1,14 @@
 import logging
 
-from Qt import QtNetwork
-from Qt import QtCore
+from PyQt5 import QtNetwork
+from PyQt5 import QtCore
 
 from python_util import util as util
 
 
 class TriggerReceiver(QtCore.QObject):
     """Grabs data from network socket and sends it as a signal, thus allowing to enqueue it"""
-    signal_got_trigger = QtCore.Signal(object, object)
+    signal_got_trigger = QtCore.pyqtSignal(object, object)
 
     def __init__(self, groupaddr, sourceIP, networkInterface, port):
         super().__init__()
@@ -39,7 +39,7 @@ class TriggerReceiver(QtCore.QObject):
         self.__port = value
         QtCore.QMetaObject.invokeMethod(self, "start")
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def start(self):
         self.logger.debug("Starting")
@@ -64,7 +64,7 @@ class TriggerReceiver(QtCore.QObject):
                 raise Exception("Could not join multicast group {}. error={}".
                                 format(self.groupaddr, self.socket.errorString()))
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def stop(self):
         self.logger.debug("Stopping.")
@@ -83,7 +83,7 @@ class TriggerReceiver(QtCore.QObject):
         except Exception:
             pass
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def __handleIncomingData(self):
         if self.socket.hasPendingDatagrams():
             len_to_read = self.socket.pendingDatagramSize()

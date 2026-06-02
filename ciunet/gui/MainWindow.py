@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from Qt import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 import scipy
 import numpy
 
@@ -14,11 +14,11 @@ from . import ExtendedMainWindow
 
 
 class MainWindow(ExtendedMainWindow.ExtendedMainWindow):
-    close_signal = QtCore.Signal()
-    printclicked = QtCore.Signal()
-    openclicked = QtCore.Signal()
-    saveclicked = QtCore.Signal()
-    executeclicked = QtCore.Signal()
+    close_signal = QtCore.pyqtSignal()
+    printclicked = QtCore.pyqtSignal()
+    openclicked = QtCore.pyqtSignal()
+    saveclicked = QtCore.pyqtSignal()
+    executeclicked = QtCore.pyqtSignal()
 
     def __init__(self, config,parent=None):
         super().__init__()
@@ -60,7 +60,7 @@ class MainWindow(ExtendedMainWindow.ExtendedMainWindow):
         self.centralTab.register_kiln(kiln)
         self.statusTray.register_kiln(kiln)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     @util.assert_equal_thread()
     def stop(self):
@@ -68,7 +68,7 @@ class MainWindow(ExtendedMainWindow.ExtendedMainWindow):
         self.centralTab.deviceStatus.stop()
         self.statusTray.hide()
 
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
     @util.noexcept
     @util.assert_equal_thread()
     def showTimeout(self, msg):
@@ -86,12 +86,12 @@ class MainWindow(ExtendedMainWindow.ExtendedMainWindow):
         msgBox.open()
         self.timeout_boxes.append(msgBox)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def timeout_message_clicked(self, _button):
         self.logger.debug("timeout_message_clicked")
         self.is_timeout_message_active = False
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.assert_equal_thread()
     def setTemporaryStatusBar(self, message):
         if type(message) == QtGui.QTextCursor:
@@ -100,7 +100,7 @@ class MainWindow(ExtendedMainWindow.ExtendedMainWindow):
             to_print = str(message)
         self.statusBar().showMessage(to_print, 2000)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.assert_equal_thread()
     def setPermanentStatusBar(self, message):
         if type(message) == QtGui.QTextCursor:
@@ -109,7 +109,7 @@ class MainWindow(ExtendedMainWindow.ExtendedMainWindow):
             to_print = str(message)
         self.statusBar().showMessage(to_print)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.guiNoExcept()
     @util.assert_equal_thread()
     def showAbout(self):
@@ -122,24 +122,24 @@ class MainWindow(ExtendedMainWindow.ExtendedMainWindow):
                                            numpy=numpy.__version__,
                                            scipy=scipy.__version__))
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.guiNoExcept()
     def quitClicked(self):
         QtCore.QCoreApplication.quit()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def printClicked(self):
         self.printclicked.emit()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def openClicked(self):
         self.openclicked.emit()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def saveClicked(self):
         self.saveclicked.emit()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def executeClicked(self):
         self.executeclicked.emit()
 

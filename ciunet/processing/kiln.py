@@ -2,7 +2,7 @@ import logging
 import datetime
 import os
 import traceback
-from Qt import QtCore
+from PyQt5 import QtCore
 #import configobj
 from python_util.util import configobj
 ConfigObj = configobj.myConfigObj
@@ -28,9 +28,9 @@ class InfluxMThread(util.WorkerThread):
     pass
 
 class Kiln(QtCore.QObject):
-    signalGotTrigger = QtCore.Signal(object,bool)
-    signalTimeout = QtCore.Signal(object)
-    signalGotStatusData = QtCore.Signal(object, object)
+    signalGotTrigger = QtCore.pyqtSignal(object,bool)
+    signalTimeout = QtCore.pyqtSignal(object)
+    signalGotStatusData = QtCore.pyqtSignal(object, object)
 
     def setTireslipCalc(self,calcer):
         self.tireslip_calculator=calcer
@@ -126,7 +126,7 @@ class Kiln(QtCore.QObject):
         self.__scannerTimeOutTimer.timeout.connect(self.__checkScannerTimeouts)
 #        self.scanners.
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def start(self):
         self.logger.debug("Starting Kiln. Thread={}".format(QtCore.QThread.currentThread()))
@@ -151,7 +151,7 @@ class Kiln(QtCore.QObject):
             self.tireslip_receiver_thread.wait()
         self.logger.debug("Quitted kiln")
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def stop(self):
         self.logger.debug("Stopping kiln")
@@ -162,15 +162,15 @@ class Kiln(QtCore.QObject):
             scanner.stop()
         self.logger.debug("Kiln stopped")
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def toggle_temperature_transformation(self):
         self.transform_temperatures = not self.transform_temperatures
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def toggle_fov_mode(self):
         self.fov_mode = not self.fov_mode
 
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
     @util.noexcept
     def __scannerTimedOut(self, scanner):
         self.composed_image.blackout(scanner)
@@ -178,7 +178,7 @@ class Kiln(QtCore.QObject):
             self.composed_image.blackout(pyrometer)
         self.signalTimeout.emit("Scanner {} timed out".format(scanner.displayIndex))
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def __checkScannerTimeouts(self):
         allTimedOut = True
@@ -281,7 +281,7 @@ class Kiln(QtCore.QObject):
         except Exception as e:
             raise Exception("Could not Initialize Nowiny Writer.") from e
 
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
     @util.noexcept
     def trigger_composer(self, _interval,sw_timeout=True):
         # Inform tcem about a trigger slightly later, to avoid any interpolation problems
@@ -342,13 +342,13 @@ class Kiln(QtCore.QObject):
         except Exception as e:
             raise Exception("Could not Initialize Trigger.") from e
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def __receiveSoftwareTimeout(self):
         self.logger.info("Received Software Timeout")
         self.__receiveTrigger(self.softwareTimeout, softwareTimeout=True)
 
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
     @util.noexcept
     def _receive_hardware_trigger(self, interval):
         if (interval is not None) and interval > self.softwareTimeout:

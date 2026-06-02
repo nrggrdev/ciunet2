@@ -3,7 +3,7 @@ import logging
 import os
 import datetime
 
-from Qt import QtCore
+from PyQt5 import QtCore
 import numpy
 
 from .TCEMImage import TCEMImage
@@ -14,7 +14,7 @@ from python_util import util as util
 from ciunet.net import server
 import asyncio
 class TCEMManager(QtCore.QObject):
-    signalSavingImage = QtCore.Signal(object)
+    signalSavingImage = QtCore.pyqtSignal(object)
 
     def __init__(self, kiln, config, length_unit, composed_image):
         try:
@@ -108,13 +108,13 @@ class TCEMManager(QtCore.QObject):
             self.__imageTimer.timeout.connect(self.tic)
         self.signalSavingImage.connect(self.__windowChecker.receiveData)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def stop(self):
         QtCore.QMetaObject.invokeMethod(self.__imageTimer, "stop")
         QtCore.QMetaObject.invokeMethod(self.__windowChecker, "stop")
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def start(self):
         self.logger.debug("Starting TCEM manager. Thread={}".format(QtCore.QThread.currentThread()))
@@ -125,7 +125,7 @@ class TCEMManager(QtCore.QObject):
         self.history_profile_timer.start()
         self.tic()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def registerTrigger(self):
         self.logger.debug("registerTrigger")
@@ -143,7 +143,7 @@ class TCEMManager(QtCore.QObject):
 
 
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def tic(self):
         try:
             self.logger.debug("tic")
@@ -345,7 +345,7 @@ class TCEMManager(QtCore.QObject):
         self.imageFilename="IMAGE{:d}.{:d}".format(self.ciu_index, toggle)
         self.write_mage_to_file(imageFileName)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def saveImageHistory(self):
         try:
@@ -366,7 +366,7 @@ class TCEMManager(QtCore.QObject):
         except Exception as e:
             self.logger.error("Could not save Image History: {}".format(e), exc_info=True)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @util.noexcept
     def saveProfileHistory(self):
         try:

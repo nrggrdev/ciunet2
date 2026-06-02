@@ -3,7 +3,7 @@ import datetime
 import traceback
 from queue import Queue
 import math
-from Qt import QtCore, QtNetwork
+from PyQt5 import QtCore, QtNetwork
 import numpy_ringbuffer
 
 from daq_net.daq.RawSegment import RawSegment
@@ -15,7 +15,7 @@ from python_util import util
 
 class DaLiGrabber(QtCore.QObject):
     """Grabs data from network socket and sends it as a signal, thus allowing to enqueue it"""
-    signalGotData = QtCore.Signal(object, object)
+    signalGotData = QtCore.pyqtSignal(object, object)
 
     def __init__(self, parent, groupaddr, sourceIP, networkInterface, port,multicast=True):
         super().__init__(parent)
@@ -54,7 +54,7 @@ class DaLiGrabber(QtCore.QObject):
         self.__port = value
         self.start()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @noexcept
     def start(self):
         self.logger.debug("Starting.")
@@ -85,7 +85,7 @@ class DaLiGrabber(QtCore.QObject):
         self.logger.debug("Started.")
         self.socket.setSocketOption(QtNetwork.QUdpSocket.ReceiveBufferSizeSocketOption,64*1024*1024)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @noexcept
     @util.assert_equal_thread()
     def stop(self):
@@ -111,7 +111,7 @@ class DaLiGrabber(QtCore.QObject):
         except Exception:
             pass
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @noexcept
     def __handleIncomingData(self):
 
@@ -132,13 +132,13 @@ class DaLiGrabber(QtCore.QObject):
 
 class DaLiReceiver(QtCore.QObject):
     """XIOX DaLi WinIO or mbed Receiver"""
-    signalGotSegment = QtCore.Signal(object)
-    signalGotLine = QtCore.Signal(object)
-    signalGotTrigger = QtCore.Signal(object)
-    signalStarted = QtCore.Signal()
-    signalStartError = QtCore.Signal(object)
-    signalNewTimeData=QtCore.Signal(object)
-    signalNewAnalogData=QtCore.Signal(object)
+    signalGotSegment = QtCore.pyqtSignal(object)
+    signalGotLine = QtCore.pyqtSignal(object)
+    signalGotTrigger = QtCore.pyqtSignal(object)
+    signalStarted = QtCore.pyqtSignal()
+    signalStartError = QtCore.pyqtSignal(object)
+    signalNewTimeData=QtCore.pyqtSignal(object)
+    signalNewAnalogData=QtCore.pyqtSignal(object)
 
     def __init__(self, parent, grabber_parent, config, scanner,timechannels={}):
         super().__init__(parent=parent)
@@ -199,11 +199,11 @@ class DaLiReceiver(QtCore.QObject):
         # self.__udpSocket.disconnected.connect(self.disconnected)
         # self.__udpSocket.error.connect(self.printSocketError)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def printSocketError(self, error):
         print("socket error!!!", error)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @noexcept
     def start(self):
         """Start the DAQ-Receiver."""
@@ -234,7 +234,7 @@ class DaLiReceiver(QtCore.QObject):
     def port(self):
         return self.grabber.port
 
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
     @noexcept
     def setPort(self, port):
         self.reset()
@@ -253,7 +253,7 @@ class DaLiReceiver(QtCore.QObject):
         return 7.3
         return 1.0 / self.__lastInterval.total_seconds()
 
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
     @noexcept
     @util.assert_equal_thread()
     def setMulticastGroup(self, mgroup):
@@ -262,7 +262,7 @@ class DaLiReceiver(QtCore.QObject):
         self.grabber.groupaddr = QtNetwork.QHostAddress(mgroup)
         self.grabber.start()
 
-    @QtCore.Slot(object)
+    @QtCore.pyqtSlot(object)
     @noexcept
     @util.assert_equal_thread()
     def setBindInterface(self, iface):
@@ -273,7 +273,7 @@ class DaLiReceiver(QtCore.QObject):
         self.grabber.networkInterface = self.__getNetworkInterface()
         self.grabber.start()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @noexcept
     def disconnected(self):
         """Socket got disconnected."""
@@ -282,7 +282,7 @@ class DaLiReceiver(QtCore.QObject):
     def quit(self):
         QtCore.QMetaObject.invokeMethod(self, "stop")
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     @noexcept
     #@util.assert_equal_thread()
     def stop(self):
@@ -357,7 +357,7 @@ class DaLiReceiver(QtCore.QObject):
             self.logger.warning("Could not get binding network interface: {}".format(e))
             return None
 
-    @QtCore.Slot(object, object)
+    @QtCore.pyqtSlot(object, object)
     def __processDatagram(self, data, host):
         """ process received datagram. """
         try:
