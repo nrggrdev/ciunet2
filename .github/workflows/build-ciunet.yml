@@ -49,14 +49,13 @@ jobs:
         shell: pwsh
         run: |
           python -m pip install --upgrade pip wheel setuptools
-          python -m pip install -r "${{ matrix.requirements-file }}"
-          python -m pip install "pyinstaller${{ matrix.pyinstaller-version }}"
-
-      - name: Install Win7 Qt wheels
-        if: matrix.name == 'win7-python-3.8.10'
-        shell: pwsh
-        run: |
-          python -m pip install --force-reinstall "PyQt5==5.15.2" "PyQt5-Qt5==5.15.2" "PyQt5-sip==12.12.2"
+          Get-Content "${{ matrix.requirements-file }}"
+          if ("${{ matrix.name }}" -eq "win7-python-3.8.10") {
+            python -m pip install --no-cache-dir "PyQt5==5.15.2" "PyQt5-Qt5==5.15.2" "PyQt5-sip==12.12.2"
+          }
+          python -m pip install --no-cache-dir -r "${{ matrix.requirements-file }}"
+          python -m pip install --no-cache-dir "pyinstaller${{ matrix.pyinstaller-version }}"
+          python -m pip check
 
       - name: Verify imports
         shell: pwsh
