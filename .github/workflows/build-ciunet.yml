@@ -52,9 +52,16 @@ jobs:
           python -m pip install -r "${{ matrix.requirements-file }}"
           python -m pip install "pyinstaller${{ matrix.pyinstaller-version }}"
 
+      - name: Install Win7 Qt wheels
+        if: matrix.name == 'win7-python-3.8.10'
+        shell: pwsh
+        run: |
+          python -m pip install --force-reinstall "PyQt5==5.15.2" "PyQt5-Qt5==5.15.2" "PyQt5-sip==12.12.2"
+
       - name: Verify imports
         shell: pwsh
         run: |
+          python -m pip list
           python -c "import influxpy; from PyQt5 import QtCore, QtGui, QtNetwork, QtWidgets; import pyqtgraph, pymodbus.client, numpy_ringbuffer, validate; import ciunet.main"
 
       - name: Build resources and executable
