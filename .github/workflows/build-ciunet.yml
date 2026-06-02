@@ -52,6 +52,11 @@ jobs:
           python -m pip install -r "${{ matrix.requirements-file }}"
           python -m pip install "pyinstaller${{ matrix.pyinstaller-version }}"
 
+      - name: Verify imports
+        shell: pwsh
+        run: |
+          python -c "import influxpy; from PyQt5 import QtCore, QtGui, QtNetwork, QtWidgets; import pyqtgraph, pymodbus.client, numpy_ringbuffer, validate; import ciunet.main"
+
       - name: Build resources and executable
         shell: pwsh
         run: |
@@ -61,7 +66,18 @@ jobs:
           if (Test-Path "resources.qrc") {
             pyrcc5 resources.qrc -o ciunet/resources.py
           }
-          pyinstaller "${{ matrix.spec-file }}" --noconfirm
+          pyinstaller "${{ matrix.spec-file }}" --clean --noconfirm
+
+      - name: Verify bundled files
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "dist/ciu_net/ciu_net.exe")) {
+            throw "dist/ciu_net/ciu_net.exe was not created"
+          }
+          $qtCore = Get-ChildItem "dist/ciu_net" -Recurse -Filter "QtCore*.pyd" | Where-Object { $_.FullName -like "*PyQt5*" }
+          if (-not $qtCore) {
+            throw "PyQt5 QtCore was not bundled into dist/ciu_net"
+          }
 
       - name: Upload executable artifact
         uses: actions/upload-artifact@v4
