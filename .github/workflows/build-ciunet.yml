@@ -57,6 +57,20 @@ jobs:
           python -m pip install --no-cache-dir "pyinstaller${{ matrix.pyinstaller-version }}"
           python -m pip check
 
+      - name: Install Win7 runtime packages
+        if: matrix.name == 'win7-python-3.8.10'
+        shell: pwsh
+        run: |
+          python -m pip install --no-cache-dir `
+            "pyqtgraph==0.13.7" `
+            "numpy-ringbuffer==0.2.2" `
+            "configobj==5.0.9" `
+            "influxdb==5.3.2" `
+            "influxpy==0.2.1" `
+            "pymodbus==3.7.4" `
+            "websockets==13.1"
+          python -m pip check
+
       - name: Verify imports
         shell: pwsh
         run: |
