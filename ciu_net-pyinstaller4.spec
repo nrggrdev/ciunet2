@@ -9,7 +9,7 @@ a = Analysis(
         ('config', 'config'),
         ('icon', 'icon'),
     ],
-    hiddenimports=[],
+    hiddenimports=['influxpy'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -29,7 +29,7 @@ exe = EXE(
     strip=False,
     upx=True,
     console=False,
-    disable_windowed_traceback=True,
+    disable_windowed_traceback=False,
     icon='icon/scanner1.ico',
 )
 coll = COLLECT(
