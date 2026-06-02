@@ -24,10 +24,12 @@ jobs:
             python-version: "3.x"
             requirements-file: requirements.txt
             pyinstaller-version: ""
+            spec-file: ciu_net.spec
           - name: win7-python-3.8.10
             python-version: "3.8.10"
             requirements-file: requirements-win7.txt
             pyinstaller-version: "==4.10"
+            spec-file: ciu_net-pyinstaller4.spec
 
     steps:
       - name: Checkout
@@ -59,7 +61,7 @@ jobs:
           if (Test-Path "resources.qrc") {
             pyrcc5 resources.qrc -o ciunet/resources.py
           }
-          pyinstaller ciu_net.spec --noconfirm
+          pyinstaller "${{ matrix.spec-file }}" --noconfirm
 
       - name: Upload executable artifact
         uses: actions/upload-artifact@v4
