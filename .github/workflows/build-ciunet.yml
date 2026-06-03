@@ -28,7 +28,10 @@ jobs:
           - name: win7-python-3.8.10
             python-version: "3.8.10"
             requirements-file: requirements-win7.txt
-            pyinstaller-version: "==4.10"
+            # 5.13.2 is the last PyInstaller that builds Windows 7-compatible
+            # executables (6.0 dropped Win7) while still supporting Python 3.8
+            # and the scipy 1.10 / cryptography 42 builds used here.
+            pyinstaller-version: "==5.13.2"
             spec-file: ciu_net-pyinstaller4.spec
 
     steps:
@@ -55,10 +58,10 @@ jobs:
           }
           python -m pip install --no-cache-dir -r "${{ matrix.requirements-file }}"
           if ("${{ matrix.name }}" -eq "win7-python-3.8.10") {
-            # PyInstaller 4.10 predates PyInstaller.isolated (added in 5.0); pin the
-            # last pyinstaller-hooks-contrib from the PyInstaller 4 era so its hooks
-            # (e.g. hook-cryptography) don't import the missing 'isolated' module.
-            python -m pip install --no-cache-dir "pyinstaller${{ matrix.pyinstaller-version }}" "pyinstaller-hooks-contrib==2022.4"
+            # Pin pyinstaller-hooks-contrib to the release contemporaneous with
+            # PyInstaller 5.13.2 (both pre-PyInstaller-6). Newer contribs target
+            # PyInstaller 6 APIs and break against 5.13.2.
+            python -m pip install --no-cache-dir "pyinstaller${{ matrix.pyinstaller-version }}" "pyinstaller-hooks-contrib==2023.8"
           } else {
             python -m pip install --no-cache-dir "pyinstaller${{ matrix.pyinstaller-version }}"
           }
