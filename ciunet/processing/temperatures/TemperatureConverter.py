@@ -46,6 +46,10 @@ class TemperatureConverter(QtCore.QObject):
         self.Φw = self.get_phi(self.window_temperature)
         self.Φwcalib = self.get_phi(self.window_calibration_temperature)
 
+        self.slave = False          # default; may be overridden in initializeReferences
+        self.P1_kiln_ref = None    # KilnPositionReference for P1 dig, if configured
+        self.P2_kiln_ref = None    # KilnPositionReference for P2 dig, if configured
+
         if self.mode == "parameters":
             self.initializeParametersMode(config)
         elif self.mode == "withReferences":
@@ -117,6 +121,22 @@ class TemperatureConverter(QtCore.QObject):
 
         self.p1_emission = float(config.get("P1_emission", 1.0))
         self.p2_emission = float(config.get("P2_emission", 1.0))
+
+        # Kiln-position-based reference points (optional)
+        # When P1_ref_position is set, the max digital value at that kiln position
+        # over one full rotation is used as P1_dig instead of a static value or analog channel.
+        # When slave=True, P1_temp / P2_temp are taken from the non-slave scanners'
+        # temperature output at those same positions.
+        self.slave = util.str2bool(str(config.get("slave", "False")))
+        from ..KilnPositionReference import KilnPositionReference
+        p1_pos = config.get("P1_ref_position", None)
+        if p1_pos is not None:
+            self.P1_kiln_ref = KilnPositionReference(float(p1_pos),
+                                                     float(config.get("P1_ref_window", 0.5)))
+        p2_pos = config.get("P2_ref_position", None)
+        if p2_pos is not None:
+            self.P2_kiln_ref = KilnPositionReference(float(p2_pos),
+                                                     float(config.get("P2_ref_window", 0.5)))
 
         # Setup update QTimer
         live_reference_update_interval = float(config["live_reference_update_interval"])
@@ -210,8 +230,14 @@ class TemperatureConverter(QtCore.QObject):
             numpy.savetxt(f, data_combined, delimiter="; ", fmt=("%d", "%.2f", "%.10f", "%.10f", "%.4f"))  # , fmt, delimiter, newline, header, footer, comments)
 
     def update_two_references(self):
-        if self.P1_dig_static:
-            P1_dig = self.P1_static_value
+        # --- P1 digital value ---
+        if self.P1_kiln_ref is not None:
+            P1_dig_raw = self.P1_kiln_ref.value
+            if numpy.isnan(P1_dig_raw):
+                return  # no complete rotation recorded yet
+            P1_dig = P1_dig_raw * self.P1_dig_factor
+        elif self.P1_dig_static:
+            P1_dig = self.P1_static_value * self.P1_dig_factor
         else:
             try:
                 P1_dig = self.scanner.multiplexedValuesManager.getValue(self.P1_live_reference_index)
@@ -221,12 +247,16 @@ class TemperatureConverter(QtCore.QObject):
             except Exception as e:
                 print(222,e)
                 pass
-                #P1_dig = self.P1_static_value
+            P1_dig *= self.P1_dig_factor
 
-        P1_dig *= self.P1_dig_factor
-
-        if self.P2_dig_static:
-            P2_dig = self.P2_static_value
+        # --- P2 digital value ---
+        if self.P2_kiln_ref is not None:
+            P2_dig_raw = self.P2_kiln_ref.value
+            if numpy.isnan(P2_dig_raw):
+                return  # no complete rotation recorded yet
+            P2_dig = P2_dig_raw * self.P2_dig_factor
+        elif self.P2_dig_static:
+            P2_dig = self.P2_static_value * self.P2_dig_factor
         else:
             try:
                 P2_dig = self.scanner.multiplexedValuesManager.getValue(self.P2_live_reference_index)
@@ -235,16 +265,26 @@ class TemperatureConverter(QtCore.QObject):
                 P2_dig=P2_dig-ai
             except:
                 pass
-                #P2_dig = self.P2_static_value
+            P2_dig *= self.P2_dig_factor
 
-        P2_dig *= self.P2_dig_factor
-
-        if self.P1_temp_static:
+        # --- P1 temperature ---
+        if self.slave and self.P1_kiln_ref is not None:
+            P1_temp = self.scanner.kiln.get_temperature_at_position(
+                self.P1_kiln_ref.kiln_position, self.P1_kiln_ref.window)
+            if P1_temp is None or numpy.isnan(P1_temp):
+                return  # master scanner not yet ready at this position
+        elif self.P1_temp_static:
             P1_temp = self.P1_temp
         else:
             P1_temp = self.scanner.temperatureManager.getValue(self.P1_temp_reference_index)
 
-        if self.P2_temp_static:
+        # --- P2 temperature ---
+        if self.slave and self.P2_kiln_ref is not None:
+            P2_temp = self.scanner.kiln.get_temperature_at_position(
+                self.P2_kiln_ref.kiln_position, self.P2_kiln_ref.window)
+            if P2_temp is None or numpy.isnan(P2_temp):
+                return  # master scanner not yet ready at this position
+        elif self.P2_temp_static:
             P2_temp = self.P2_temp
         else:
             P2_temp = self.scanner.temperatureManager.getValue(self.P2_temp_reference_index)
@@ -268,6 +308,25 @@ class TemperatureConverter(QtCore.QObject):
         if self.logger.isEnabledFor(logging.DEBUG):
             self.logger.debug("References used to recalculate temperature calibration.A={} u0={}; p1_dig={}, p1_temp={}C, p2_dig={}, p2_temp={}C".
                               format(self.A, self.u0, P1_dig, Temperature.kelvinToCelsius(P1_temp), P2_dig, Temperature.kelvinToCelsius(P2_temp)))
+
+    def update_kiln_position_references(self, raw_data, geo_transformator):
+        """Feed a raw FOV scan line into the kiln-position reference accumulators."""
+        if self.P1_kiln_ref is not None:
+            self.P1_kiln_ref.update(raw_data, geo_transformator)
+        if self.P2_kiln_ref is not None:
+            self.P2_kiln_ref.update(raw_data, geo_transformator)
+
+    def on_kiln_trigger(self):
+        """Commit accumulated maxima on kiln rotation trigger and invalidate cached calibration."""
+        changed = False
+        if self.P1_kiln_ref is not None:
+            self.P1_kiln_ref.on_trigger()
+            changed = True
+        if self.P2_kiln_ref is not None:
+            self.P2_kiln_ref.on_trigger()
+            changed = True
+        if changed:
+            self.live_references_valid = False
 
     def update_references(self):
         """Update reference data and recalculate A and u0"""

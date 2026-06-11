@@ -417,4 +417,47 @@ class Kiln(QtCore.QObject):
         now = util.current_local_time()
         filename = os.path.abspath("./thermal_image_{}.IMG".format(now))
         self.tcem.write_mage_to_file(filename)
+
+    def get_temperature_at_position(self, kiln_position, window):
+        """Return the maximum temperature (in Kelvin) from non-slave scanners at a kiln position.
+
+        Used by slave-mode TemperatureConverter to obtain the reference temperature that
+        master scanners report at the configured overlap position.
+
+        :param kiln_position: Centre of the query window in kiln length units.
+        :param window:        Full width of the query window in the same units.
+        :returns:             Maximum temperature in Kelvin, or ``numpy.nan`` if no data
+                              is available yet.
+        """
+        import numpy
+        max_temp = numpy.nan
+        kiln_len = self.kiln_end - self.kiln_start
+        if kiln_len == 0.0:
+            return max_temp
+        for scanner in self.scanners:
+            if getattr(getattr(scanner, 'temperature_transformer', None), 'slave', False):
+                continue
+            try:
+                data = scanner.last_line.data
+            except Exception:
+                continue
+            if data is None:
+                continue
+            n = len(data)
+            if n == 0:
+                continue
+            low_px = max(0, int((kiln_position - window / 2.0 - self.kiln_start) / kiln_len * n))
+            high_px = min(n, int((kiln_position + window / 2.0 - self.kiln_start) / kiln_len * n) + 1)
+            if low_px >= high_px:
+                continue
+            segment = data[low_px:high_px]
+            try:
+                valid = segment[numpy.isfinite(segment)]
+            except Exception:
+                continue
+            if len(valid) > 0:
+                t = float(numpy.max(valid))
+                if numpy.isnan(max_temp) or t > max_temp:
+                    max_temp = t
+        return max_temp
         return filename

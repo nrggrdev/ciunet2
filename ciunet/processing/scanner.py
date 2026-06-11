@@ -169,6 +169,7 @@ class Scanner(Sensor.Sensor):
         # if self.last_line is None:
         #     self.logger.debug("Scanner does not yet have any last lines, ignoring trigger.")
         #     return
+        self.temperature_transformer.on_kiln_trigger()
         print ("extern trigger")
         try:
             trigger_time = self.last_line.time_usec
@@ -201,6 +202,7 @@ class Scanner(Sensor.Sensor):
 
     def intTrigger(self, segment):
         print ("intern trigger", self.trigger,segment,segment.last_trigger_usec)
+        self.temperature_transformer.on_kiln_trigger()
         try:
             if not self.trigger:
                 return
@@ -354,6 +356,7 @@ class Scanner(Sensor.Sensor):
 
     def __convertLine(self, rawline, data):
         try:
+            self.temperature_transformer.update_kiln_position_references(data, self.geologe)
             data = self.__transformTemperatures(data)
             data = self.__transformGeometry(data)
             c = ConvertedLine(rawline.time_usec)

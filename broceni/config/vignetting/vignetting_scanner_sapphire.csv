@@ -1,0 +1,26 @@
+# Angle dependent transmission adjustement (vignetting) for sapphire (AL2O3) windows mounted in the scanner. Source scanner/08D.Window.Lager.Performance-Tests/Tx.vs.Angle.GO90409A.xls
+0,0.883
+5,0.9466
+10,0.9682
+15,0.9841
+20,0.9909
+25,0.9955
+30,0.9966
+35,1
+40,1
+45,1
+50,1
+55,1
+60,1
+65,1
+70,1
+75,1
+80,1
+85,1
+90,1
+95,0.9966
+100,0.9852
+105,0.9739
+110,0.9614
+115,0.95
+120,0.9136
