@@ -24,3 +24,8 @@ dependencies = [
     "setuptools>=82.0.1",
     "websockets>=16.0",
 ]
+
+[tool.uv]
+override-dependencies = [
+    "pyqt5-qt5; sys_platform != 'win32'",
+]

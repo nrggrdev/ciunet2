@@ -1,0 +1,76 @@
+2026-06-11 13:59:34.887208+02:00;ERROR;root;Exception in 'TemperatureConverter.update_log_conversion_table': [Errno 2] No such file or directory: 'logs/scanner_temperature.log'
+Traceback (most recent call last):
+  File "D:\______________________________________________newdev\ciunet2\python_util\util\noexcept.py", line 13, in inner
+    return func(*args, **kwargs)
+  File "D:\______________________________________________newdev\ciunet2\ciunet\processing\temperatures\TemperatureConverter.py", line 228, in update_log_conversion_table
+    with open(self.log_conversion_table, "wb") as f:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'logs/scanner_temperature.log'
+
+2026-06-11 13:59:34.900655+02:00;ERROR;root;Exception in 'TemperatureConverter.update_log_conversion_table': [Errno 2] No such file or directory: 'logs/scanner_temperature.log'
+Traceback (most recent call last):
+  File "D:\______________________________________________newdev\ciunet2\python_util\util\noexcept.py", line 13, in inner
+    return func(*args, **kwargs)
+  File "D:\______________________________________________newdev\ciunet2\ciunet\processing\temperatures\TemperatureConverter.py", line 228, in update_log_conversion_table
+    with open(self.log_conversion_table, "wb") as f:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'logs/scanner_temperature.log'
+
+2026-06-11 13:59:37.977673+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 13:59:40.974648+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 13:59:43.974061+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 13:59:46.971533+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 13:59:49.964971+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 13:59:52.978997+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 13:59:55.966853+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 13:59:58.972670+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:01.974240+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:04.975613+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:07.979752+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:10.979476+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:13.982919+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:17.001306+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:20.002764+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:23.002510+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:25.995409+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:29.007289+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:32.014143+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:35.018085+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:38.011666+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:41.018188+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:44.022471+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:47.021569+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:50.023621+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:53.024353+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:56.025669+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:00:59.021609+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:02.015632+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:05.012896+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:08.011946+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:11.020469+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:14.025481+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:17.040268+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:20.030194+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:23.030180+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:26.026061+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:29.051156+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:32.056868+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:35.055765+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:38.045830+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:41.042435+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:44.045536+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:47.057888+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:50.063128+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:53.061676+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:56.063755+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:59.071750+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:45.733305+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:48.736352+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:51.735282+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:54.732871+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:01:57.742212+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:02:00.732579+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:02:03.730230+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:02:06.729786+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:02:09.748398+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist
+2026-06-11 14:02:12.750234+02:00;ERROR;WinAlarm;Could not parse window ini file: File ../ciu1/window1.ini does not exist

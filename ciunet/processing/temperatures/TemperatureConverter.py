@@ -72,8 +72,10 @@ class TemperatureConverter(QtCore.QObject):
 
     def initializeReferences(self, config, mode='exp'):
         """Initialize config for reference-mode"""
-        self.tempfit=mode
+        self.tempfit = mode
         self.A = self.u0 = numpy.nan
+        self.m = numpy.nan
+        self.b = numpy.nan
         self.dPhi = 0.0
 
         self.P1_temp_static = util.str2bool(config["P1_temp_static"])
@@ -230,11 +232,16 @@ class TemperatureConverter(QtCore.QObject):
             numpy.savetxt(f, data_combined, delimiter="; ", fmt=("%d", "%.2f", "%.10f", "%.10f", "%.4f"))  # , fmt, delimiter, newline, header, footer, comments)
 
     def update_two_references(self):
+        """Update two-point calibration. Returns True on success, False if not ready yet."""
+        sname = self.scanner.name
+
         # --- P1 digital value ---
         if self.P1_kiln_ref is not None:
             P1_dig_raw = self.P1_kiln_ref.value
             if numpy.isnan(P1_dig_raw):
-                return  # no complete rotation recorded yet
+                self.logger.info("[%s] REF: P1 dig not ready yet (no complete rotation at %.2fm)",
+                                 sname, self.P1_kiln_ref.kiln_position)
+                return False
             P1_dig = P1_dig_raw * self.P1_dig_factor
         elif self.P1_dig_static:
             P1_dig = self.P1_static_value * self.P1_dig_factor
@@ -245,15 +252,17 @@ class TemperatureConverter(QtCore.QObject):
                 ai=int(P1_dig)&a
                 P1_dig=P1_dig-ai
             except Exception as e:
-                print(222,e)
-                pass
+                self.logger.warning("[%s] REF: P1 dig read failed: %s", sname, e)
+                return False
             P1_dig *= self.P1_dig_factor
 
         # --- P2 digital value ---
         if self.P2_kiln_ref is not None:
             P2_dig_raw = self.P2_kiln_ref.value
             if numpy.isnan(P2_dig_raw):
-                return  # no complete rotation recorded yet
+                self.logger.info("[%s] REF: P2 dig not ready yet (no complete rotation at %.2fm)",
+                                 sname, self.P2_kiln_ref.kiln_position)
+                return False
             P2_dig = P2_dig_raw * self.P2_dig_factor
         elif self.P2_dig_static:
             P2_dig = self.P2_static_value * self.P2_dig_factor
@@ -263,8 +272,9 @@ class TemperatureConverter(QtCore.QObject):
                 a=0x7000
                 ai=int(P2_dig)&a
                 P2_dig=P2_dig-ai
-            except:
-                pass
+            except Exception as e:
+                self.logger.warning("[%s] REF: P2 dig read failed: %s", sname, e)
+                return False
             P2_dig *= self.P2_dig_factor
 
         # --- P1 temperature ---
@@ -272,7 +282,12 @@ class TemperatureConverter(QtCore.QObject):
             P1_temp = self.scanner.kiln.get_temperature_at_position(
                 self.P1_kiln_ref.kiln_position, self.P1_kiln_ref.window)
             if P1_temp is None or numpy.isnan(P1_temp):
-                return  # master scanner not yet ready at this position
+                self.logger.info("[%s] REF (slave): P1 temp at %.2fm not available from master scanners",
+                                 sname, self.P1_kiln_ref.kiln_position)
+                return False
+            self.logger.info("[%s] REF (slave): P1 at %.2fm — dig=%.0f, master_temp=%.1f°C",
+                             sname, self.P1_kiln_ref.kiln_position, P1_dig,
+                             Temperature.kelvinToCelsius(P1_temp))
         elif self.P1_temp_static:
             P1_temp = self.P1_temp
         else:
@@ -283,7 +298,12 @@ class TemperatureConverter(QtCore.QObject):
             P2_temp = self.scanner.kiln.get_temperature_at_position(
                 self.P2_kiln_ref.kiln_position, self.P2_kiln_ref.window)
             if P2_temp is None or numpy.isnan(P2_temp):
-                return  # master scanner not yet ready at this position
+                self.logger.info("[%s] REF (slave): P2 temp at %.2fm not available from master scanners",
+                                 sname, self.P2_kiln_ref.kiln_position)
+                return False
+            self.logger.info("[%s] REF (slave): P2 at %.2fm — dig=%.0f, master_temp=%.1f°C",
+                             sname, self.P2_kiln_ref.kiln_position, P2_dig,
+                             Temperature.kelvinToCelsius(P2_temp))
         elif self.P2_temp_static:
             P2_temp = self.P2_temp
         else:
@@ -294,20 +314,31 @@ class TemperatureConverter(QtCore.QObject):
         if P2_temp < 0.0:
             raise ValueError("P2_temp < 0 Kelvin.")
 
-        if self.tempfit=='linear':
-            self.m=(P1_temp-P2_temp)/(P1_dig-P2_dig)
-            self.b=P1_temp-self.m*P1_dig
-            print(f'linear temp mode: m={self.m}, b={self.b}')
-            return
+        if self.tempfit == 'linear':
+            if P1_dig == P2_dig:
+                self.logger.warning("[%s] REF: P1_dig == P2_dig (%.0f) — cannot compute linear calibration",
+                                    sname, P1_dig)
+                return False
+            self.m = (P1_temp - P2_temp) / (P1_dig - P2_dig)
+            self.b = P1_temp - self.m * P1_dig
+            self.logger.info("[%s] REF: linear calibration updated — "
+                             "P1(dig=%.0f, %.1f°C) P2(dig=%.0f, %.1f°C) → m=%.6f, b=%.2fK",
+                             sname, P1_dig, Temperature.kelvinToCelsius(P1_temp),
+                             P2_dig, Temperature.kelvinToCelsius(P2_temp),
+                             self.m, self.b)
+            return True
 
         p1_rad = Temperature.temperatureToRadiation(self.B, self.C, P1_temp)
         p2_rad = Temperature.temperatureToRadiation(self.B, self.C, P2_temp)
         self.A = Temperature.A_from_references(P1_dig, p1_rad, P2_dig, p2_rad, self.p1_emission, self.p2_emission, self.τa)
         self.u0 = Temperature.calculate_digital_offset_from_references(P1_dig, p1_rad, P2_dig, p2_rad)
         self.dPhi = 0.0
-        if self.logger.isEnabledFor(logging.DEBUG):
-            self.logger.debug("References used to recalculate temperature calibration.A={} u0={}; p1_dig={}, p1_temp={}C, p2_dig={}, p2_temp={}C".
-                              format(self.A, self.u0, P1_dig, Temperature.kelvinToCelsius(P1_temp), P2_dig, Temperature.kelvinToCelsius(P2_temp)))
+        self.logger.info("[%s] REF: exp calibration updated — "
+                         "P1(dig=%.0f, %.1f°C) P2(dig=%.0f, %.1f°C) → A=%.6g, u0=%.2f",
+                         sname, P1_dig, Temperature.kelvinToCelsius(P1_temp),
+                         P2_dig, Temperature.kelvinToCelsius(P2_temp),
+                         self.A, self.u0)
+        return True
 
     def update_kiln_position_references(self, raw_data, geo_transformator):
         """Feed a raw FOV scan line into the kiln-position reference accumulators."""
@@ -334,7 +365,8 @@ class TemperatureConverter(QtCore.QObject):
             if self.live_references_valid:
                 return
             if self.mode == "withReferences":
-                self.update_two_references()
+                if not self.update_two_references():
+                    return  # not ready yet — will retry on next call
             elif self.mode == "withSingleReference":
                 self.update_single_reference()
             self.live_references_valid = True
