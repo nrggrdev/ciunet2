@@ -6,7 +6,7 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[
-        ('config', 'config'),
+        ('broceni/config', 'config'),
         ('icon', 'icon'),
     ],
     hiddenimports=[

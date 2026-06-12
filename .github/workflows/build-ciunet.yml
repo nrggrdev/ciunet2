@@ -25,6 +25,7 @@ jobs:
             requirements-file: requirements.txt
             pyinstaller-version: ""
             spec-file: ciu_net.spec
+            win7: false
           - name: win7-python-3.8.10
             python-version: "3.8.10"
             requirements-file: requirements-win7.txt
@@ -33,6 +34,7 @@ jobs:
             # and the scipy 1.10 / cryptography 42 builds used here.
             pyinstaller-version: "==5.13.2"
             spec-file: ciu_net-pyinstaller4.spec
+            win7: true
 
     steps:
       - name: Checkout
@@ -53,11 +55,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip wheel setuptools
           Get-Content "${{ matrix.requirements-file }}"
-          if ("${{ matrix.name }}" -eq "win7-python-3.8.10") {
+          if ([System.Convert]::ToBoolean("${{ matrix.win7 }}")) {
             python -m pip install --no-cache-dir "PyQt5==5.15.2" "PyQt5-Qt5==5.15.2" "PyQt5-sip==12.12.2"
           }
           python -m pip install --no-cache-dir -r "${{ matrix.requirements-file }}"
-          if ("${{ matrix.name }}" -eq "win7-python-3.8.10") {
+          if ([System.Convert]::ToBoolean("${{ matrix.win7 }}")) {
             # Pin pyinstaller-hooks-contrib to the release contemporaneous with
             # PyInstaller 5.13.2 (both pre-PyInstaller-6). Newer contribs target
             # PyInstaller 6 APIs and break against 5.13.2.
@@ -68,7 +70,7 @@ jobs:
           python -m pip check
 
       - name: Install Win7 runtime packages
-        if: matrix.name == 'win7-python-3.8.10'
+        if: matrix.win7 == true
         shell: pwsh
         run: |
           python -m pip install --no-cache-dir `
