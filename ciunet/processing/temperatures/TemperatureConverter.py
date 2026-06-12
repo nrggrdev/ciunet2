@@ -133,12 +133,16 @@ class TemperatureConverter(QtCore.QObject):
         from ..KilnPositionReference import KilnPositionReference
         p1_pos = config.get("P1_ref_position", None)
         if p1_pos is not None:
+            p1_method = str(config.get("P1_ref_method", "max")).lower()
             self.P1_kiln_ref = KilnPositionReference(float(p1_pos),
-                                                     float(config.get("P1_ref_window", 0.5)))
+                                                     float(config.get("P1_ref_window", 0.5)),
+                                                     method=p1_method)
         p2_pos = config.get("P2_ref_position", None)
         if p2_pos is not None:
+            p2_method = str(config.get("P2_ref_method", "max")).lower()
             self.P2_kiln_ref = KilnPositionReference(float(p2_pos),
-                                                     float(config.get("P2_ref_window", 0.5)))
+                                                     float(config.get("P2_ref_window", 0.5)),
+                                                     method=p2_method)
 
         # Setup update QTimer
         live_reference_update_interval = float(config["live_reference_update_interval"])
@@ -236,15 +240,17 @@ class TemperatureConverter(QtCore.QObject):
         sname = self.scanner.name
 
         # --- P1 digital value ---
-        if self.P1_kiln_ref is not None:
+        # P1_dig_static takes priority over the kiln-position accumulator so that
+        # a fixed reference value (e.g. cold body) can be used even in slave mode.
+        if self.P1_dig_static:
+            P1_dig = self.P1_static_value * self.P1_dig_factor
+        elif self.P1_kiln_ref is not None:
             P1_dig_raw = self.P1_kiln_ref.value
             if numpy.isnan(P1_dig_raw):
                 self.logger.info("[%s] REF: P1 dig not ready yet (no complete rotation at %.2fm)",
                                  sname, self.P1_kiln_ref.kiln_position)
                 return False
             P1_dig = P1_dig_raw * self.P1_dig_factor
-        elif self.P1_dig_static:
-            P1_dig = self.P1_static_value * self.P1_dig_factor
         else:
             try:
                 P1_dig = self.scanner.multiplexedValuesManager.getValue(self.P1_live_reference_index)
@@ -257,15 +263,15 @@ class TemperatureConverter(QtCore.QObject):
             P1_dig *= self.P1_dig_factor
 
         # --- P2 digital value ---
-        if self.P2_kiln_ref is not None:
+        if self.P2_dig_static:
+            P2_dig = self.P2_static_value * self.P2_dig_factor
+        elif self.P2_kiln_ref is not None:
             P2_dig_raw = self.P2_kiln_ref.value
             if numpy.isnan(P2_dig_raw):
                 self.logger.info("[%s] REF: P2 dig not ready yet (no complete rotation at %.2fm)",
                                  sname, self.P2_kiln_ref.kiln_position)
                 return False
             P2_dig = P2_dig_raw * self.P2_dig_factor
-        elif self.P2_dig_static:
-            P2_dig = self.P2_static_value * self.P2_dig_factor
         else:
             try:
                 P2_dig = self.scanner.multiplexedValuesManager.getValue(self.P2_live_reference_index)
@@ -313,6 +319,15 @@ class TemperatureConverter(QtCore.QObject):
             raise ValueError("P1_temp < 0 Kelvin.")
         if P2_temp < 0.0:
             raise ValueError("P2_temp < 0 Kelvin.")
+
+        # Enforce P2 is always the higher-temperature reference
+        if P2_temp < P1_temp:
+            P1_temp, P2_temp = P2_temp, P1_temp
+            P1_dig, P2_dig = P2_dig, P1_dig
+            self.logger.info("[%s] REF: P1/P2 swapped — P2 is now the higher reference "
+                             "(%.1f°C > %.1f°C)",
+                             sname, Temperature.kelvinToCelsius(P2_temp),
+                             Temperature.kelvinToCelsius(P1_temp))
 
         if self.tempfit == 'linear':
             if P1_dig == P2_dig:
